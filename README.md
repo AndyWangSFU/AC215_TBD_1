@@ -23,16 +23,16 @@ Project Organization
 
 
 --------
-# AC215 - Milestone2 - ButterFlyer
+# AC215 - Milestone2 - “Multimodal Fake News Detector”
 
 **Team Members**
-Pavlov Protovief, Paolo Primopadre and Pablo El Padron
+Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
 
 **Group Name**
-Awesome Group
+TBD_1
 
 **Project**
-In this project we aim to develop an application that can identify various species of butterflies in the wild using computer vision and offer educational content through a chatbot interface.
+In this project we aim to develop an application that develops and deploys two models, one for detecting fake content when only text is given and another when text and images are inputs. The rationale is that when a user chooses to use our API and, for instance, check news they found online, they might not have an image but will most likely have text. However, if the user can provide an image associated with the text, the image may provide additional context that improves the discriminatory power of our model.
 
 ### Milestone2 ###
 
