@@ -9,8 +9,7 @@ verify_ssl = true
 google-cloud-storage = "*"
 numpy = "*"
 opencv-python = "*"
-Pillow = "*"
-
+pillow = "*"
 
 [requires]
 python_version = "3.9"

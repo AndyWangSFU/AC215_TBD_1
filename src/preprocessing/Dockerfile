@@ -4,7 +4,7 @@ FROM python:3.9-slim-bookworm
 # This allows us to use "pipenv shell" as a container entry point.
 ENV PYENV_SHELL=/bin/bash
 
-ENV GOOGLE_APPLICATION_CREDENTIALS=secrets/mega-pipeline.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=secrets/ac215-tbd-1.json
 
 # Ensure we have an up to date baseline, install dependencies 
 RUN set -ex; \

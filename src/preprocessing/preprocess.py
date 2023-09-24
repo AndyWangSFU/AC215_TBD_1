@@ -3,14 +3,17 @@
 Module that contains the command line app.
 """
 import argparse
+import glob
 import os
 from google.cloud import storage
+from PIL import Image
+import numpy as np
 
 GCP_PROJECT = "AC215"
 BUCKET_NAME = "fakenew_classifier_data_bucket"
 # Initiate Storage client
 
-def download():
+def download(filepath, max_num):
     # Initiate Storage client
     storage_client = storage.Client(project=GCP_PROJECT)
 
@@ -18,11 +21,13 @@ def download():
     bucket = storage_client.bucket(BUCKET_NAME)
     
     # create a local folder for the downloaded file if not exist
-    os.makedirs(args.filepath, exist_ok=True)
+    os.makedirs(filepath, exist_ok=True)
 
     # Find all content in a bucket
-    blobs = bucket.list_blobs(prefix=args.filepath)
+    blobs = bucket.list_blobs(prefix=filepath)
     for blob in blobs:
+        if max_num == 0:
+            break
         if not blob.name.endswith("/"):
             try:
             # Download the blob to a local file with the same name
@@ -30,11 +35,24 @@ def download():
                 print(f"Downloaded: {blob.name}")
             except Exception as e:
                 print(f"Error downloading {blob.name}: {str(e)}")
+            max_num -= 1
     
-def process():
-    print("process")
+def process(filepath, size):
+    # for each image, resize it to 64X64 and save it to new folder
+    img_paths = glob.glob(filepath + "/*.jpg")
+    new_folder = filepath + "_processed"
+    print(f"Saving processed images to {new_folder}")
+    os.makedirs(new_folder, exist_ok=True)
 
-def upload():
+    for img_path in img_paths:
+        img = Image.open(img_path)
+        img = img.resize((size, size))
+        img.save(os.path.join(new_folder, os.path.basename(img_path)))
+        print(os.path.join(new_folder, os.path.basename(img_path)))
+        print(f"Processed: {img_path}")
+    
+
+def upload(filepath):
     # Initiate Storage client
     storage_client = storage.Client(project=GCP_PROJECT)
 
@@ -42,28 +60,38 @@ def upload():
     bucket = storage_client.bucket(BUCKET_NAME)
 
     # Destination path in GCS 
-    destination_blob_name = args.filepath
+    destination_blob_name = filepath + "/"
     blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename("test.txt")
-
-    for root, dirs, files in os.walk(args.filepath):
-        for file in files:
-            local_file_path = os.path.join(root, file)
-            blob_name = os.path.relpath(local_file_path, start=args.filepath)
-            blob = bucket.blob(blob_name)
-            blob.upload_from_filename(local_file_path)
-            print(f"Uploaded: {blob_name}")
+    print(f"Uploading to {destination_blob_name}")
+    img_files = glob.glob(filepath + "/*.jpg")
+    for img_file in img_files:
+        blob.upload_from_filename(img_file)
+        print(f"Uploaded: {img_file}")
 
 def main(args=None):
 
-    print("Args:", args)
+    # print("Args:", args)
+    if not args.filepath:
+        print("Using default filepath: data/")
+        filepath = "data"
+    else:
+        print("Using filepath:", args.filepath)
+        filepath = args.filepath
+    if not args.max:
+        print("getting all files")
+        max_num = -1
+    else:
+        print(f"getting first {args.max} files:")
+        max_num = args.max
+    if not args.size:
+        args.size=64
 
     if args.download:
-        download()
+        download(filepath, max_num)
     if args.process:
-        process()
+        process(filepath, size=args.size)
     if args.upload:
-        upload()
+        upload(filepath)
 
 
 if __name__ == "__main__":
@@ -83,6 +111,12 @@ if __name__ == "__main__":
     
     parser.add_argument("-f", "--filepath", type=str,
                         help="Download/Upload the file with this filepath(prefix)")
+    
+    parser.add_argument("-m", "--max", type=int,
+                        help="Max number of files to process")
+    
+    parser.add_argument("-s", "--size", type=int,
+                        help="Dimension of the processed image")
 
     args = parser.parse_args()
 
