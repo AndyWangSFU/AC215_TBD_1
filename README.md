@@ -47,9 +47,24 @@ We gathered dataset of 1M butterflies representing 17K species. Our dataset come
 
 (2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `special butterfly package` 
 
-(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
 
-To run Dockerfile - `Instructions here`
+To run Dockerfile - 
+make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/
+```
+cd src/preprocessing/
+docker build -t tbd1-preprocess -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
+```
+Inside Docker container, sample preprocessing steps - 
+```
+# download first 10 images
+python preprocess.py -d -f "raw_images/public_image_set" -m 10 
+# resize images to 100X100
+python preprocess.py -p -f "raw_images/public_image_set" -s 100
+# upload resized images
+python preprocess.py -u -f "raw_images/public_image_set_processed"
+```
 
 **Cross validation, Data Versioning**
 - This container reads preprocessed dataset and creates validation split and uses dvc for versioning.
