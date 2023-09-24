@@ -1,0 +1,5 @@
+# preprocessed data
+src/preprocessing/data/*
+
+# secret file
+src/preprocessing/secrets/*
