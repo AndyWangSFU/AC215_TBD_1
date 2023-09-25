@@ -59,7 +59,8 @@ We are using the Fakeddit dataset from Nakamura, Levy, and Wang in 2020 for mode
 
 (2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Pillow`, `albumentations` 
 
-(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+(3) `src/preprocessing/Pipefile` and `src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
+(4) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
 
 To run Dockerfile - 
 make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/ to enable GCP authentication
@@ -84,18 +85,29 @@ python preprocess.py -p -f "raw_images/public_image_set" -s 128 -a -n 5 --suffix
 python preprocess.py -u -f "raw_images/public_image_set_processed"
 ```
 
-**Cross validation, Data Versioning**
-- This container reads preprocessed dataset and creates validation split and uses dvc for versioning.
-- Input to this container is source GCS location, parameters if any, secrets needed - via docker
-- Output is flat file with cross validation splits
+** Data Versioning**
+- This container reads the raw dataset and initiates the versioning using dvc.
   
-(1) `src/validation/cv_val.py` - Since our dataset is quite large we decided to stratify based on species and kept 80% for training and 20% for validation. Our metrics will be monitored on this 20% validation set. 
+(1) `src/data_versioning/cli.py`  -This script will simpily download raw data from the bucket
 
-(2) `requirements.txt` - We used following packages to help us with cross validation here - `iterative-stratification` 
+(2) `src/data_versioning/Pipefile` and `src/data_versioning/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv 
 
-(3) `src/validation/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+(3) `src/data_versioning/Dockerfile` Dockerfile to build the container for data versioning
 
-To run Dockerfile - `Instructions here`
+(4) `src/data_versioning/docker-shell.sh` Run this shell script to build and run the container
+
+To run Dockerfile - 
+make sure ac215-tbd-1.json is downloaded into src//secrets/ to enable GCP authentication
+```
+cd src/data_versioning/
+sh docker-shell.sh
+
+# initialize dvc tracking
+dvc init
+dvc remote add -d image_dataset gs://fakenew_classifier_data_bucket/dvc_store
+dvc add public_image_set
+dvc push
+```
 
 **Notebooks** 
 This folder contains code that is not part of container
