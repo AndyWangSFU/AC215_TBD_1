@@ -1,5 +1,4 @@
-# Use the official Debian-hosted Python image
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-bookworm
 
 ARG DEBIAN_PACKAGES="build-essential git curl"
 
@@ -16,8 +15,7 @@ ENV PYENV_SHELL=/bin/bash
 # Tell Python to disable buffering so we don't lose any logs.
 ENV PYTHONUNBUFFERED=1
 
-# Ensure we have an up to date baseline, install dependencies and
-# create a user so we don't run the app as root
+# Ensure we have an up-to-date baseline and install dependencies
 RUN set -ex; \
     for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
     apt-get update && \
@@ -27,25 +25,17 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir --upgrade pip && \
     pip install pipenv && \
-    useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 Passw0rd)" && \
-    mkdir -p /app && \
-    chown app:app /app
+    mkdir -p /app
 
+# Set the user to root
+USER root
 
-# Switch to the new user
-USER app
 WORKDIR /app
 
 # Install python packages
-ADD --chown=app:app Pipfile Pipfile.lock /app/
+ADD Pipfile Pipfile.lock /app/
 
 RUN pipenv sync
-
-# Add the rest of the source code. This is done last so we don't invalidate all
-# layers when we change a line of code.
-ADD --chown=app:app . /app
-
-RUN git config --global --add safe.directory /app
 
 # Entry point
 #ENTRYPOINT ["/bin/bash","./docker-entrypoint.sh"]
