@@ -9,7 +9,7 @@ verify_ssl = true
 albumentations = "*"
 google-cloud-storage = "*"
 numpy = "*"
-opencv-python = "*"
+opencv-python-headless = "*"
 pillow = "*"
 
 [requires]
