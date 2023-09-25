@@ -7,3 +7,4 @@ src/preprocessing/secrets/*
 
 # system files
 *.DS_Store
+*.jpg
