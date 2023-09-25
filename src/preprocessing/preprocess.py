@@ -8,6 +8,7 @@ import os
 from google.cloud import storage
 from PIL import Image
 import numpy as np
+import albumentations as A
 
 GCP_PROJECT = "AC215"
 BUCKET_NAME = "fakenew_classifier_data_bucket"
@@ -36,19 +37,43 @@ def download(filepath, max_num):
             except Exception as e:
                 print(f"Error downloading {blob.name}: {str(e)}")
             max_num -= 1
+
+def augment_img(img_path, size, augment_num=5, new_folder="data_augmented"):
+    transform = A.Compose([
+        A.RandomCrop(width=size, height=size),
+        A.HorizontalFlip(p=0.5),
+        A.RandomBrightnessContrast(p=0.2),
+    ])
+    for i in range(augment_num):
+        img = Image.open(img_path).convert('RGB')
+        img = np.array(img)
+        transformed = transform(image=img)
+        transformed_image = Image.fromarray(transformed["image"])
+        transformed_image.save(
+            os.path.join(
+                new_folder, os.path.basename(img_path).split(".")[0] + f"_{i}.jpg"
+            )
+        )
+    print(f"Augmented: {img_path}")
+
     
-def process(filepath, size):
-    # for each image, resize it to 64X64 and save it to new folder
+def process(filepath, size, file_suffix="_processed", augment=False, augment_num=5):
+    # for each image, resize it to 128X128 (default) and save it to new folder
     img_paths = glob.glob(filepath + "/*.jpg")
-    new_folder = filepath + "_processed"
+    new_folder = filepath + file_suffix
     print(f"Saving processed images to {new_folder}")
     os.makedirs(new_folder, exist_ok=True)
 
     for img_path in img_paths:
         img = Image.open(img_path)
-        img = img.resize((size, size))
-        img.save(os.path.join(new_folder, os.path.basename(img_path)))
-        print(os.path.join(new_folder, os.path.basename(img_path)))
+        if img.verify() == False:
+            print(f"Error opening {img_path}. Skipping...")
+            continue
+        if augment:
+            augment_img(img_path, size, augment_num, new_folder)
+        else:
+            img = img.resize((size, size))
+            img.save(os.path.join(new_folder, os.path.basename(img_path)))
         print(f"Processed: {img_path}")
     
 
@@ -84,12 +109,19 @@ def main(args=None):
         print(f"getting first {args.max} files:")
         max_num = args.max
     if not args.size:
-        args.size=64
+        args.size=128
+    if not args.suffix:
+        args.suffix="_processed"
+    if not args.augment_num:
+        args.augment_num=5
 
     if args.download:
         download(filepath, max_num)
     if args.process:
-        process(filepath, size=args.size)
+        process(
+            filepath, size=args.size, file_suffix=args.suffix, 
+            augment=args.augment, augment_num=args.augment_num
+        )
     if args.upload:
         upload(filepath)
 
@@ -117,6 +149,15 @@ if __name__ == "__main__":
     
     parser.add_argument("-s", "--size", type=int,
                         help="Dimension of the processed image")
+    
+    parser.add_argument("-S", "--suffix", type=str,
+                        help="Suffix of the processed image")
+    
+    parser.add_argument("-a", "--augment", action='store_true',
+                        help="Augment the processed image")
+    
+    parser.add_argument("-n", "--augment_num", type=int,
+                        help="Number of augmented images per image")
 
     args = parser.parse_args()
 
