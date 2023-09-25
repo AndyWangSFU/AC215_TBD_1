@@ -11,15 +11,26 @@ Project Organization
       ├── references
       ├── requirements.txt
       ├── setup.py
+      ├── .gitignore
+      ├── .gitattributes
       └── src
             ├── preprocessing
             │   ├── Dockerfile
             │   ├── preprocess.py
             │   └── requirements.txt
-            └── validation
+            │   └── Pipfile
+            │   └── Pipfile.lock
+            └── data_versioning
                   ├── Dockerfile
-                  ├── cv_val.py
-                  └── requirements.txt
+                  ├── cli.py
+                  └── docker-shell.sh
+                  └── .dvcignore
+                  └── Pipfile
+                  └── Pipfile.lock
+                  └── README.md
+                  └── .dvc
+                  
+                  
 
 
 --------
@@ -36,14 +47,15 @@ In this project we aim to develop an application that develops and deploys two m
 
 ### Milestone2 ###
 
-We gathered dataset of 1M butterflies representing 17K species. Our dataset comes from following sources - (1),(2),(3) with approx 100GB in size. We parked our dataset in a private Google Cloud Bucket. 
+We are using the Fakeddit dataset from Nakamura, Levy, and Wang in 2020 for model training and validation. The dataset comprises more than one million text samples that have been categorized into six distinct groups: "True," "Satire," "Misleading Content," "Manipulated Content," "False Connection," and "Imposter Content." Of these samples, 682,996 are multimodal being accompanied by images. We have stored these images in a private Google Cloud Bucket. Following consultation with our TF (Jarrod Parks), for Milestone 2, we focus on creating containers for preprocessing training images and data versioning for these images.
 
 **Preprocess container**
-- This container reads 100GB of data and resizes the image sizes and stores it back to GCP
-- Input to this container is source and destincation GCS location, parameters for resizing, secrets needed - via docker
+
+- This container downloads data from the Google Cloud Bucket, resizes and processes the data, stores it back to GCP.
+- Our inputs for this container depend on whether an image is simply being resized or augmented. For image resizing, the main parameter is size of output image. If augmenting image, parameters is the extent of augmentation (e.g., 5X) and the size of output images.
 - Output from this container stored at GCS location
 
-(1) `src/preprocessing/preprocess.py`  - Here we do preprocessing on our dataset of 100GB, we reduce the image sizes (a parameter that can be changed later) to 128x128 for faster iteration with our process. Now we have dataset at 10GB and saved on GCS. 
+(1) `src/preprocessing/preprocess.py`  - Here we do preprocessing on our dataset. This contains code to perform the above steps. The output is saved on GCS. 
 
 (2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Pillow`, `albumentations` 
 
@@ -86,7 +98,4 @@ python preprocess.py -u -f "raw_images/public_image_set_processed"
 To run Dockerfile - `Instructions here`
 
 **Notebooks** 
-This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
-
-----
-You may adjust this template as appropriate for your project.
+This folder contains code that is not part of container
