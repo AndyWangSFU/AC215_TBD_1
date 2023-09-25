@@ -9,6 +9,7 @@ from google.cloud import storage
 from PIL import Image
 import numpy as np
 import albumentations as A
+import zipfile
 
 GCP_PROJECT = "AC215"
 BUCKET_NAME = "fakenew_classifier_data_bucket"
@@ -37,6 +38,7 @@ def download(filepath, max_num):
             except Exception as e:
                 print(f"Error downloading {blob.name}: {str(e)}")
             max_num -= 1
+
 
 def augment_img(img_path, size, augment_num=5, new_folder="data_augmented"):
     transform = A.Compose([
@@ -77,7 +79,7 @@ def process(filepath, size, file_suffix="_processed", augment=False, augment_num
         print(f"Processed: {img_path}")
     
 
-def upload(filepath):
+def upload(filepath, batch_size=10000):
     # Initiate Storage client
     storage_client = storage.Client(project=GCP_PROJECT)
 
@@ -86,20 +88,41 @@ def upload(filepath):
 
     # Destination path in GCS 
     destination_blob_name = filepath
-    # blob = bucket.blob(destination_blob_name)
     print(f"Uploading to {destination_blob_name}")
-    img_files = glob.glob(filepath + "/*.jpg")
-    for img_file in img_files:
-        blob = bucket.blob(img_file)
-        blob.upload_from_filename(img_file)
-        print(f"Uploaded: {img_file}")
+    
+    # Create a list of image files
+    image_files = [os.path.join(filepath, filename) for filename in os.listdir(filepath) if filename.endswith('.jpg')]
+    batches = [image_files[i:i + batch_size] for i in range(0, len(image_files), batch_size)]
+
+    # Create zip files for each batch of images
+    for i, batch in enumerate(batches):
+        zip_filename = os.path.join(destination_blob_name, f'images_batch_{i + 1}.zip')
+        
+        with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for image_file in batch:
+                zipf.write(image_file, os.path.basename(image_file))
+
+        print(f"Created zip file: {zip_filename}")
+        
+        blob = bucket.blob(zip_filename)
+        blob.upload_from_filename(zip_filename)  
+        print(f"Uploaded: {zip_filename}")
+        os.remove(zip_filename)
+
+    # unused code to upload individual files
+    # img_files = glob.glob(filepath + "/*.jpg")
+    # for img_file in img_files:
+    #     blob = bucket.blob(img_file)
+    #     blob.upload_from_filename(img_file)
+    #     print(f"Uploaded: {img_file}")
+
 
 def main(args=None):
 
     # print("Args:", args)
     if not args.filepath:
         print("Using default filepath: data/")
-        filepath = "data"
+        filepath = "raw_images/public_image_set"
     else:
         print("Using filepath:", args.filepath)
         filepath = args.filepath
@@ -115,6 +138,8 @@ def main(args=None):
         args.suffix="_processed"
     if not args.augment_num:
         args.augment_num=5
+    if not args.batch_size:
+        args.batch_size=10000
 
     if args.download:
         download(filepath, max_num)
@@ -124,7 +149,7 @@ def main(args=None):
             augment=args.augment, augment_num=args.augment_num
         )
     if args.upload:
-        upload(filepath)
+        upload(filepath, args.batch_size)
 
 
 if __name__ == "__main__":
@@ -138,6 +163,9 @@ if __name__ == "__main__":
     
     parser.add_argument("-p", "--process", action='store_true',
                         help="Process the downloaded file")
+    
+    parser.add_argument("-a", "--augment", action='store_true',
+                        help="Augment the processed image")
 
     parser.add_argument("-u", "--upload", action='store_true',
                         help="Upload audio file to GCS bucket")
@@ -146,19 +174,19 @@ if __name__ == "__main__":
                         help="Download/Upload the file with this filepath(prefix)")
     
     parser.add_argument("-m", "--max", type=int,
-                        help="Max number of files to process")
+                        help="Max number of files to download")
     
     parser.add_argument("-s", "--size", type=int,
                         help="Dimension of the processed image")
     
     parser.add_argument("-S", "--suffix", type=str,
                         help="Suffix of the processed image")
-    
-    parser.add_argument("-a", "--augment", action='store_true',
-                        help="Augment the processed image")
-    
+  
     parser.add_argument("-n", "--augment_num", type=int,
                         help="Number of augmented images per image")
+    
+    parser.add_argument("-b", "--batch_size", type=int,
+                        help="Number of images to upload per batch")
 
     args = parser.parse_args()
 
