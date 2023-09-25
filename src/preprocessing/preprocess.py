@@ -65,7 +65,7 @@ def process(filepath, size, file_suffix="_processed", augment=False, augment_num
     os.makedirs(new_folder, exist_ok=True)
 
     for img_path in img_paths:
-        img = Image.open(img_path)
+        img = Image.open(img_path).convert('RGB')
         if img.verify() == False:
             print(f"Error opening {img_path}. Skipping...")
             continue
