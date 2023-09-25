@@ -85,11 +85,12 @@ def upload(filepath):
     bucket = storage_client.bucket(BUCKET_NAME)
 
     # Destination path in GCS 
-    destination_blob_name = filepath + "/"
-    blob = bucket.blob(destination_blob_name)
+    destination_blob_name = filepath
+    # blob = bucket.blob(destination_blob_name)
     print(f"Uploading to {destination_blob_name}")
     img_files = glob.glob(filepath + "/*.jpg")
     for img_file in img_files:
+        blob = bucket.blob(img_file)
         blob.upload_from_filename(img_file)
         print(f"Uploaded: {img_file}")
 
