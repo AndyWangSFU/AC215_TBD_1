@@ -45,23 +45,29 @@ We gathered dataset of 1M butterflies representing 17K species. Our dataset come
 
 (1) `src/preprocessing/preprocess.py`  - Here we do preprocessing on our dataset of 100GB, we reduce the image sizes (a parameter that can be changed later) to 128x128 for faster iteration with our process. Now we have dataset at 10GB and saved on GCS. 
 
-(2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `special butterfly package` 
+(2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Pillow`, `albumentations` 
 
 (3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
 
 To run Dockerfile - 
-make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/
+make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/ to enable GCP authentication
 ```
 cd src/preprocessing/
 docker build -t tbd1-preprocess -f Dockerfile .
 docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
 ```
 Inside Docker container, sample preprocessing steps - 
 ```
 # download first 10 images
 python preprocess.py -d -f "raw_images/public_image_set" -m 10 
 # resize images to 100X100
-python preprocess.py -p -f "raw_images/public_image_set" -s 100
+python preprocess.py -p -f "raw_images/public_image_set" -s 100 --suffix "_processed"
+# Alternatively, to augment images, producing 5X augmented images of size 128X128
+python preprocess.py -p -f "raw_images/public_image_set" -s 128 -a -n 5 --suffix "_augmented"
+
 # upload resized images
 python preprocess.py -u -f "raw_images/public_image_set_processed"
 ```
