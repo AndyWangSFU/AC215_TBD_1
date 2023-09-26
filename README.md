@@ -47,7 +47,7 @@ In this project we aim to develop an application that develops and deploys two m
 
 ### Milestone2 ###
 
-We are using the Fakeddit dataset from Nakamura, Levy, and Wang in 2020 for model training and validation. The dataset comprises more than one million text samples that have been categorized into six distinct groups: "True," "Satire," "Misleading Content," "Manipulated Content," "False Connection," and "Imposter Content." Of these samples, 682,996 are multimodal being accompanied by images. We have stored these images in a private Google Cloud Bucket. Following consultation with our TF (Jarrod Parks), for Milestone 2, we focus on creating containers for preprocessing training images and data versioning for these images.
+We are using the Fakeddit dataset from Nakamura, Levy, and Wang in 2020 for model training and validation. The dataset comprises more than one million text samples that have been categorized into six distinct groups: "True," "Satire," "Misleading Content," "Manipulated Content," "False Connection," and "Imposter Content." Of these samples, 682,996 are multimodal being accompanied by images. We have stored these images in a private Google Cloud Bucket. Following consultation with our TF (Jarrod Parks), for Milestone 2, we focus on creating containers for preprocessing training images and data versioning for these images. The text data is precleaned in our training data which is why we focus on preprocessing image data for training in Milestone 2.
 
 **Preprocess container**
 
@@ -60,6 +60,7 @@ We are using the Fakeddit dataset from Nakamura, Levy, and Wang in 2020 for mode
 (2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Pillow`, `albumentations` 
 
 (3) `src/preprocessing/Pipefile` and `src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
+
 (4) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
 
 To run Dockerfile - 
