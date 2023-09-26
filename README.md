@@ -76,14 +76,17 @@ pipenv install -r requirements.txt
 Inside Docker container, sample preprocessing steps - 
 ```
 # download first 10 images
-python preprocess.py -d -f "raw_images/public_image_set" -m 10 
+python preprocess.py -d -f "raw_images/public_image_set" -m 10
+ 
 # resize images to 100X100
 python preprocess.py -p -f "raw_images/public_image_set" -s 100 --suffix "_processed"
 # Alternatively, to augment images, producing 5X augmented images of size 128X128
 python preprocess.py -p -f "raw_images/public_image_set" -s 128 -a -n 5 --suffix "_augmented"
 
-# upload resized images
+# upload resized images individually
 python preprocess.py -u -f "raw_images/public_image_set_processed"
+# Alternatively, upload resized images in batch (as a compressed zip file) (Preferred)
+python preprocess.py -u -f "raw_images/public_image_set_processed" -b 10000
 ```
 
 ** Data Versioning**
