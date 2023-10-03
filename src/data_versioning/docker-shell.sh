@@ -14,9 +14,9 @@ docker network inspect data-versioning-network >/dev/null 2>&1 || docker network
 docker build -t data-version-cli --platform=linux/amd64 -f Dockerfile .
 
 # Run Container
-docker run --rm --name data-version-cli -ti \
+docker run --privileged --rm --name data-version-cli -ti \
 -v "$BASE_DIR":/app \
--v "$ABSOLUTE_PATH":/app/.git \
+--mount type=bind,source="$ABSOLUTE_PATH",target=/app/.git \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCP_ZONE=$GCP_ZONE \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
