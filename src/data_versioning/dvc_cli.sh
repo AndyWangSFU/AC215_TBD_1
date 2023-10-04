@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # mount the bucket
+mkdir -p mounted_bucket
 gcsfuse --key-file secrets/ac215-tbd-1.json fakenew_classifier_data_bucket mounted_bucket/
  
 # Ask the user if they want to initialize DVC
