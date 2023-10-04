@@ -1,0 +1,6 @@
+outs:
+- md5: b4b0171507991f68ab004c8377db0350.dir
+  size: 22509
+  nfiles: 43
+  hash: md5
+  path: tfrecords_test
