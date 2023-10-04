@@ -40,7 +40,7 @@ Project Organization
             │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
             │   ├── run_docker.sh
-            │   ├── multimodal_binary_training.py
+            │   ├── train.py
             │   └── train_cli_example_input.json
             ├── tfrecords
             │   ├── Dockerfile
@@ -72,10 +72,9 @@ We address each of the objectives for Milestone 3 in the following ways:
 
 [add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
 
-<img width="1268" alt="Screenshot 2023-10-04 at 7 18 31 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/4d2b99d6-e94f-4ef6-8399-5d9ffe41cc46">
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
-
-
+Figure 1: Google Cloud Platform being used to store different versions of training and test data
 
 
 2. Utilize TensorFlow for Data Management
@@ -84,7 +83,11 @@ We built a TFRecords container and have generated some TFRecords files which we 
 
 3. Develop Advanced Training Workflows
 
-We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `multimodal_binary_training.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
+We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
+
+<img width="1271" alt="Screenshot 2023-10-04 at 7 22 14 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f204bf95-e939-4cd5-91dc-768b726bd692">
+
+Figure 2: screenshot of our Weights & Biases dashboard with model training charts
 
 
 #### Code Structure
@@ -114,7 +117,6 @@ To run Dockerfile - `Instructions here`
  
 **Model Training Container**
 
-
 - This container contains all our training scripts and modeling components. 
 - It currently takes in a `.json` file that has the path to the cleaned metadata, image directory, and several model architectural and training hyperparameters.
 - The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B
@@ -131,14 +133,13 @@ It takes in a configuration `.json` (here as example `train_cli_example_input.js
 > > --val_path [string] : path to validation metadata
 > > --input_mode [string]: mode of input, current it only support TFData
 
-(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0 as the base image for the container.
+(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu as the base image for version 2.13.0.
 
 (3) `src/models/run_docker.sh` Shell script to run the container
 
 To run Dockerfile:
 1. `docker build -t training -f Dockerfile .`
 2. `sh run_docker.sh`
-
 
 **Notebooks** 
 This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
