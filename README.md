@@ -122,7 +122,7 @@ To run Dockerfile - `Instructions here`
 
 (1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs it can find in the host environment. In our case, we were only able to recieve quota for 1 GPU, and we configured a VM that has one GPU to run this.
 
-It takes in a configuration `.json` (here train_cli_example_input.json) files that has the following arguments:
+It takes in a configuration `.json` (here as example `train_cli_example_input.json`) file that has the following arguments:
 
 > > --batch_size [int] : the size of batches used to train the model
 > > --layer_size [int] : the size of the adjustable dense layer
