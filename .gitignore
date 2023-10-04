@@ -3,7 +3,7 @@ src/preprocessing/data/*
 src/preprocessing/raw_images/*
 
 # secret file
-src/preprocessing/secrets/*
+*secrets/
 
 # system files
 *.DS_Store
