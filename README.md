@@ -1,4 +1,4 @@
-AC215-Template (Milestone3)
+<img width="1260" alt="image" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/d412a056-e1a5-4061-b652-656f3b71a44c">AC215-Template (Milestone3)
 ==============================
 
 AC215 - Milestone3
@@ -72,22 +72,20 @@ We address each of the objectives for Milestone 3 in the following ways:
 
 [add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
 
+<img width="1268" alt="Screenshot 2023-10-04 at 7 18 31 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/4d2b99d6-e94f-4ef6-8399-5d9ffe41cc46">
+
+
+
+
+
 2. Utilize TensorFlow for Data Management
 
 We built a TFRecords container and have generated some TFRecords files which we have tested for use in training our model. We also tested TFData for model training. We found that TFRecords did not streamline our pipeline significantly compared to TFData and was fairly slow to generate when implemented. Therefore, for now, we are performing model training with pre-fetched TFData files and it works well. We are keeping the TFRecords container in our repo because if we subsequently find TFRecords indeed provides large performance boosts, we aim to leverage TFRecords in Milestone 4.
 
 3. Develop Advanced Training Workflows
 
-We train our model using both text and image data. We implement experiment tracking using Weights & Biases. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
+We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
 
-
-**Key Implementations**
-
-*Experiment Tracking*
-
-Below is a screenshot from our Weights & Biases workspace. Tracking was performed using the `wandb` library we included inside of our `train.py` script. 
-
-[add image]
 
 #### Code Structure
 
