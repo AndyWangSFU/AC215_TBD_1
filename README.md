@@ -10,7 +10,6 @@ Project Organization
       ├── notebooks
       ├── references
       ├── requirements.txt
-      ├── setup.py
       ├── .gitignore
       ├── .gitattributes
       └── src
