@@ -114,22 +114,31 @@ To run Dockerfile - `Instructions here`
  
 **Model Training Container**
 
-- This container contains all our training scripts and modeling components. It will use TFRecords, train, and then output model to a GCP bucket.
-- The input for this container is TFRecords corresponding to our training data and the output is a bucket for storing the trained model.
-- Output is a saved TF Keras model.
 
-(1) `train.py` - This script pulls in TFRecords for images that have already been augmented and preprocessed and fits the model. It takes the following arguments:
+- This container contains all our training scripts and modeling components. 
+- It currently takes in a `.json` file that has the path to the cleaned metadata, image directory, and several model architectural and training hyperparameters.
+- The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B
+- The resulting model checkpoints of each training runs are stored as artifacts in W&B and can be easily reloaded to perform inference. 
+
+(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs it can find in the host environment. In our case, we were only able to recieve quota for 1 GPU, and we configured a VM that has one GPU to run this.
+
+It takes in a configuration `.json` (here train_cli_example_input.json) files that has the following arguments:
 
 > > --batch_size [int] : the size of batches used to train the model
 > > --layer_size [int] : the size of the adjustable dense layer
-> > --num_gpus [int] : a parameter to adjust the number of GPUs used to train the model. Default is 1
 > > --max_epochs [int] : a parameter to define the max number of epochs for model training
-> > --train_path [string] : path to training dataset
-> > --num_gpus [string] : path to validation dataset
+> > --train_path [string] : path to training metadata
+> > --val_path [string] : path to validation metadata
+> > --input_mode [string]: mode of input, current it only support TFData
 
-(3) `src/models/vgg16/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu as the base image for version 2.13.0.
 
-To run Dockerfile - `Instructions here`
+(3) `src/models/run_docker.sh` Shell script to run the container
+
+To run Dockerfile:
+1. docker build -t training -f Dockerfile .
+2. sh run_docker.sh
+
 
 **Notebooks** 
 This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
