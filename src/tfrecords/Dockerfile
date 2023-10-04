@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow
+FROM tensorflow/tensorflow:2.14.0-gpu
 
 # Tell pipenv where the shell is. 
 # This allows us to use "pipenv shell" as a container entry point.
@@ -18,15 +18,10 @@ RUN set -ex; \
 WORKDIR /app
 
 # Add Pipfile, Pipfile.lock
-ADD Pipfile Pipfile.lock /app/
-
-RUN pipenv sync
+ADD requirements.txt /app/
 
 # Source code
 ADD . /app
 
 # Entry point
 ENTRYPOINT ["/bin/bash"]
-
-# Get into the pipenv shell
-CMD ["-c", "pipenv shell"]
