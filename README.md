@@ -136,8 +136,8 @@ It takes in a configuration `.json` (here as example `train_cli_example_input.js
 (3) `src/models/run_docker.sh` Shell script to run the container
 
 To run Dockerfile:
-1. docker build -t training -f Dockerfile .
-2. sh run_docker.sh
+1. `docker build -t training -f Dockerfile .`
+2. `sh run_docker.sh`
 
 
 **Notebooks** 
