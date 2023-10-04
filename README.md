@@ -40,7 +40,7 @@ Project Organization
             │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
             │   ├── run_docker.sh
-            │   ├── train.py
+            │   ├── multimodal_binary_training.py
             │   └── train_cli_example_input.json
             ├── tfrecords
             │   ├── Dockerfile
@@ -84,7 +84,7 @@ We built a TFRecords container and have generated some TFRecords files which we 
 
 3. Develop Advanced Training Workflows
 
-We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
+We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `multimodal_binary_training.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
 
 
 #### Code Structure
@@ -131,7 +131,7 @@ It takes in a configuration `.json` (here as example `train_cli_example_input.js
 > > --val_path [string] : path to validation metadata
 > > --input_mode [string]: mode of input, current it only support TFData
 
-(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu as the base image for version 2.13.0.
+(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0 as the base image for the container.
 
 (3) `src/models/run_docker.sh` Shell script to run the container
 
