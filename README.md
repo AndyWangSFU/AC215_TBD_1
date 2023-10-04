@@ -13,25 +13,41 @@ Project Organization
       ├── .gitignore
       ├── .gitattributes
       ├── .dvcignore
-      
+      ├── .dvc
+      ├── reports
       └── src
             ├── preprocessing
             │   ├── Dockerfile
-            │   ├── preprocess.py
-            │   └── requirements.txt
-            │   └── Pipfile
+            │   ├── data_loader.py
+            │   ├── process.py
+            │   ├── requirements.txt
+            │   ├── Pipfile
             │   └── Pipfile.lock
-            └── data_versioning
-                  ├── Dockerfile
-                  ├── cli.py
-                  └── docker-shell.sh
-                  └── .dvcignore
-                  └── Pipfile
-                  └── Pipfile.lock
-                  └── README.md
-                  └── .dvc
-                  
-                  
+            ├── data_versioning
+            │   ├── Dockerfile
+            │   ├── cli.py
+            │   ├── docker-shell.sh
+            │   ├── .dvcignore
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── README.md
+            │   ├── .dvc
+            │   └── dvc_cli.sh
+            ├── models
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── multimodal_binary_training.py
+            │   ├── requirements.txt
+            │   ├── run_docker.sh
+            │   ├── train.py
+            │   └── train_cli_example_input.json
+            ├── tfrecords
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── requirements.txt
+            │   └── tfrecords.py      
 
 
 --------
@@ -44,26 +60,28 @@ Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
 TBD_1
 
 **Project**
-In this project we aim to develop an application that develops and deploys two models, one for detecting fake content when only text is given and another when text and images are inputs. The rationale is that when a user chooses to use our API and, for instance, check news they found online, they might not have an image but will most likely have text. However, if the user can provide an image associated with the text, the image may provide additional context that improves the discriminatory power of our model.
+In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. 
 
 ### Milestone3
+
+**Objectives for Milestone3**
 
 We address each of the objectives for Milestone 3 in the following ways:
 
 1. Integrate Distributed Computing and Cloud Storage
 
-[add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images and text as it supports the vast scale of these datasets.
+[add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
 
 2. Utilize TensorFlow for Data Management
 
-We initially tried to train the model using a data pipeline that only included TFData but found that training occured too slowly (hrs/days timeframe). We therefore implemented TFRecord which streamlined our data pipeline.
+We built a TFRecords container and have generated some TFRecords files which we have tested for use in training our model. We also tested TFData for model training. We found that TFRecords did not streamline our pipeline significantly compared to TFData and was fairly slow to generate when implemented. Therefore, for now, we are performing model training with pre-fetched TFData files and it works well. We are keeping the TFRecords container in our repo because if we subsequently find TFRecords indeed provides large performance boosts, we aim to leverage TFRecords in Milestone 4.
 
 3. Develop Advanced Training Workflows
 
 We train our model using both text and image data. We implement experiment tracking using Weights & Biases. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
 
 
-**Key implementation highlights**
+**Key Implementations**
 
 *Experiment Tracking*
 
