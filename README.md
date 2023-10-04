@@ -72,14 +72,13 @@ Below is a screenshot from our Weights & Biases workspace. Tracking was performe
 
 #### Code Structure
 
-**Data Folder**
-Don't submit data, but we want to show one possible way of structuring data transformations.
+**Data Pre-Processing Container** [to be adjusted]
 
-**Data Processing Container**
-
-- This container reads 100GB of data, transforming the images to TFRecords and stores them on a GCP bucket
-- Input to this container is source and destination GCS location, parameters for resizing, secrets needed - via docker
-- Output from this container stored on GCP bucket
+- This container downloads data from the Google Cloud Bucket, resizes and processes the data, stores it back to GCP.
+- Our inputs for this container depend on whether an image is simply being resized or augmented. For image resizing, the main parameter is size of output image. If augmenting image, parameters is the extent of augmentation (e.g., 5X) and the size of output images.
+- In addition, the container downloads the metadata for the images from Google Cloud Bucket, filters and cleans the metadata for images that are uncorrupted, and stores this filtered metadata back into GCP.
+- The rationale for not downloading the images themselves and preprocessing them is that the image dataset is very large and has already been preprocessed. We only need to check for whether an image is uncorrupted or not. Similarly, the text data that we use to train and test our model has already been pre-processed. We therefore leave these in the GCP as well and do not download them using our pre-processing container. 
+- Output from this container stored at GCS location
 
 (1) `src/datapipeline/dataloader.py`  - This script loads the original immutable data to our compute instance's local `raw` folder for processing.
 
@@ -89,17 +88,27 @@ Don't submit data, but we want to show one possible way of structuring data tran
 
 To run Dockerfile - `Instructions here`
 
-**VGG16 Training Container**
+**Data Versioning Container**
 
-- This container contains all our training scripts and modeling components. It will use data from a GCP bucket, train, and then output model artifacts (saved model) to a GCP bucket.
-- The input for this container is the source bucket for our training data and the output bucket for storing the trained model.
+
+**TFRecoed container**
+
+
+ 
+**Model Training Container**
+
+- This container contains all our training scripts and modeling components. It will use TFRecords, train, and then output model to a GCP bucket.
+- The input for this container is TFRecords corresponding to our training data and the output is a bucket for storing the trained model.
 - Output is a saved TF Keras model.
 
-(1) `src/models/vgg16/train_multi_gpu.py` - This script converts incoming data to TFRecords, applies standard image augmentation, and fits the model. It takes the following arguments:
+(1) `train.py` - This script pulls in TFRecords for images that have already been augmented and preprocessed and fits the model. It takes the following arguments:
 
-> > --gpu [int] : the number of GPUs to use for training, default is 1
-> > --input [string] : the source of the training data
-> > --output [string] : the bucket which to store model artifacts
+> > --batch_size [int] : the size of batches used to train the model
+> > --layer_size [int] : the size of the adjustable dense layer
+> > --num_gpus [int] : a parameter to adjust the number of GPUs used to train the model. Default is 1
+> > --max_epochs [int] : a parameter to define the max number of epochs for model training
+> > --train_path [string] : path to training dataset
+> > --num_gpus [string] : path to validation dataset
 
 (3) `src/models/vgg16/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
 
