@@ -11,9 +11,7 @@ numpy = "*"
 pandas = "*"
 tensorflow_hub = "*"
 tensorflow_text = "*"
-opencv-python-headless = "*"
-pillow = "*"
-albumentations = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.11"
