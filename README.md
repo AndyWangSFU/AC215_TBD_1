@@ -12,6 +12,8 @@ Project Organization
       ├── requirements.txt
       ├── .gitignore
       ├── .gitattributes
+      ├── .dvcignore
+      
       └── src
             ├── preprocessing
             │   ├── Dockerfile
