@@ -3,4 +3,4 @@ opencv-python-headless
 Pillow
 albumentations
 google-cloud-storage
-zipfile
+pandas

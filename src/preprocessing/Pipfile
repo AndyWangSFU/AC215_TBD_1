@@ -11,7 +11,7 @@ google-cloud-storage = "*"
 numpy = "*"
 opencv-python-headless = "*"
 pillow = "*"
-zipfile = “*”
+pandas = "*"
 
 [requires]
 python_version = "3.9"

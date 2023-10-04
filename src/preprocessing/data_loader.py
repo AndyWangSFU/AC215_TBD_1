@@ -1,14 +1,10 @@
-# preprocess.py
+# data_loader.py
 """
-Module that contains the command line app.
+Module that download and upload data.
 """
 import argparse
-import glob
 import os
 from google.cloud import storage
-from PIL import Image
-import numpy as np
-import albumentations as A
 import zipfile
 
 GCP_PROJECT = "AC215"
@@ -39,45 +35,6 @@ def download(filepath, max_num):
                 print(f"Error downloading {blob.name}: {str(e)}")
             max_num -= 1
 
-
-def augment_img(img_path, size, augment_num=5, new_folder="data_augmented"):
-    transform = A.Compose([
-        A.RandomCrop(width=size, height=size),
-        A.HorizontalFlip(p=0.5),
-        A.RandomBrightnessContrast(p=0.2),
-    ])
-    for i in range(augment_num):
-        img = Image.open(img_path).convert('RGB')
-        img = np.array(img)
-        transformed = transform(image=img)
-        transformed_image = Image.fromarray(transformed["image"])
-        transformed_image.save(
-            os.path.join(
-                new_folder, os.path.basename(img_path).split(".")[0] + f"_{i}.jpg"
-            )
-        )
-    print(f"Augmented: {img_path}")
-
-    
-def process(filepath, size, file_suffix="_processed", augment=False, augment_num=5):
-    # for each image, resize it to 128X128 (default) and save it to new folder
-    img_paths = glob.glob(filepath + "/*.jpg")
-    new_folder = filepath + file_suffix
-    print(f"Saving processed images to {new_folder}")
-    os.makedirs(new_folder, exist_ok=True)
-
-    for img_path in img_paths:
-        img = Image.open(img_path).convert('RGB')
-        if img.verify() == False:
-            print(f"Error opening {img_path}. Skipping...")
-            continue
-        if augment:
-            augment_img(img_path, size, augment_num, new_folder)
-        else:
-            img = img.resize((size, size))
-            img.save(os.path.join(new_folder, os.path.basename(img_path)))
-        print(f"Processed: {img_path}")
-    
 
 def upload(filepath, batch_size=10000):
     # Initiate Storage client
@@ -132,22 +89,13 @@ def main(args=None):
     else:
         print(f"getting first {args.max} files:")
         max_num = args.max
-    if not args.size:
-        args.size=128
-    if not args.suffix:
-        args.suffix="_processed"
-    if not args.augment_num:
-        args.augment_num=5
+
     if not args.batch_size:
         args.batch_size=10000
-
+        
     if args.download:
         download(filepath, max_num)
-    if args.process:
-        process(
-            filepath, size=args.size, file_suffix=args.suffix, 
-            augment=args.augment, augment_num=args.augment_num
-        )
+
     if args.upload:
         upload(filepath, args.batch_size)
 
@@ -156,34 +104,19 @@ if __name__ == "__main__":
     # Generate the inputs arguments parser
     # if you type into the terminal 'python cli.py --help', it will provide the description
     parser = argparse.ArgumentParser(
-        description='Synthesis audio from text')
+        description='Upload/Download/Process images from GCS bucket')
 
     parser.add_argument("-d", "--download", action='store_true',
                         help="Download paragraph of text from GCS bucket")
-    
-    parser.add_argument("-p", "--process", action='store_true',
-                        help="Process the downloaded file")
-    
-    parser.add_argument("-a", "--augment", action='store_true',
-                        help="Augment the processed image")
 
     parser.add_argument("-u", "--upload", action='store_true',
-                        help="Upload audio file to GCS bucket")
+                        help="Upload image to GCS bucket")
     
-    parser.add_argument("-f", "--filepath", type=str,
+    parser.add_argument("-f", "--filepath", type=str, default="raw_images/public_image_set",
                         help="Download/Upload the file with this filepath(prefix)")
     
     parser.add_argument("-m", "--max", type=int,
                         help="Max number of files to download")
-    
-    parser.add_argument("-s", "--size", type=int,
-                        help="Dimension of the processed image")
-    
-    parser.add_argument("-S", "--suffix", type=str,
-                        help="Suffix of the processed image")
-  
-    parser.add_argument("-n", "--augment_num", type=int,
-                        help="Number of augmented images per image")
     
     parser.add_argument("-b", "--batch_size", type=int,
                         help="Number of images to upload per batch")
