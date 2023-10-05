@@ -1,4 +1,0 @@
-[core]
-    remote = fake_news_dataset
-['remote "fake_news_dataset"']
-    url = gs://fakenew_classifier_data_bucket/dvc_store
