@@ -1,4 +1,4 @@
-(Milestone3)
+Milestone3
 ==============================
 
 AC215 - Milestone3
