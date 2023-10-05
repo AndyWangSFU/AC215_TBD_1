@@ -70,7 +70,7 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 ### Milestone3
 
-<u>**Objectives for Milestone3**<u>
+<ins>**Objectives for Milestone3**</ins>
 
 We address each of the objectives for Milestone 3 in the following ways:
 
