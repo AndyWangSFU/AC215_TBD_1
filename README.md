@@ -67,7 +67,7 @@ We address each of the objectives for Milestone 3 in the following ways:
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
-Figure 2: Google Cloud Platform being used to store different versions of training and test data
+Figure 1: Google Cloud Platform being used to store different versions of training and test data
 
 
 *2. Utilize TensorFlow for Data Management*
@@ -80,7 +80,7 @@ We train our model using both text and image data. We implement experiment track
 
 <img width="1271" alt="Screenshot 2023-10-04 at 7 22 14 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f204bf95-e939-4cd5-91dc-768b726bd692">
 
-Figure 3: screenshot of our Weights & Biases dashboard with model training charts
+Figure 2: screenshot of our Weights & Biases dashboard with model training charts
 
 
 <ins>**Code Structure**</ins>
