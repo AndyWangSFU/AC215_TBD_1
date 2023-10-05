@@ -181,6 +181,15 @@ Current tensorflow Example structure:
 
 (2) `requirements.txt` Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
 
+The container is currently run locally, while we are hoping to run this container on GCP eventually. To run the container:
+```
+docker build --platform=linux/amd64/v4 -t tbd1-tfrecords -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-tfrecords
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
+```
+
  
 *Model Training Container*
 
