@@ -63,7 +63,6 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 <p align="center">
   ![AC215_TBD_1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/53b18850-f0d1-47a4-8f78-71724c18faff)
-      Figure 1: Project data pipeline
 </p>
 
 
