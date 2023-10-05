@@ -162,9 +162,8 @@ dvc push
 
 - This container converts input data into TFRecords files. Note that the dataset is featurized in the same way in the *Model Training Container* as well. This was done to compare using TFRecords vs using pre-fetched TFData for model training. 
 
-(1) `src/tfrecords/tfrecords.py` - This script reads the text and image inputs for each sample and the associated label, and converts and shards samples into TFRecord files. 
-- Images are normalized, resized before being converted to bytes
-- Texts are featurized using a BERT preprocessor into 3 bert inputs: (text_input_mask, text_input_type_ids, text_input_word_ids)
+- Image inputs are normalized, resized before  converted to bytes
+- Text inputs are featurized using a BERT preprocessor into 3 bert inputs: (text_input_mask, text_input_type_ids, text_input_word_ids)
 
 Current tensorflow Example structure:
 
@@ -177,6 +176,8 @@ Current tensorflow Example structure:
         'label': int64_list,
     }
 ```
+
+(1) `src/tfrecords/tfrecords.py` - This script reads the text and image inputs for each sample and the associated label, and converts and shards samples into TFRecord files. 
 
 (2) `requirements.txt` Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
 
