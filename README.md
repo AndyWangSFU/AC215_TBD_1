@@ -105,9 +105,9 @@ Figure 3: screenshot of our Weights & Biases dashboard with model training chart
 (1) `src/preprocessing/data_loader.py`  - This script downloads and uploads data to and from GCP. There are two key functions:
 
 - a)	"download"
-      - Function: Download file from “file_path”
-      - Usage: python data_loader.py -d -f “file_path”
-      - Optional: -m number (max number of images to download)
+-       Function: Download file from “file_path”
+        Usage: python data_loader.py -d -f “file_path”
+        Optional: -m number (max number of images to download)
 
 b)	"upload" 
 Function: Upload files in local “file_path” in the form of zipped files
