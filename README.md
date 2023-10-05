@@ -139,8 +139,6 @@ pipenv install -r requirements.txt
 - This container sets up data versioning for data in this project.
 
 (1) `src/data_versioninig/dvc_cli.sh` - This script mounts the GCP bucket, asks the user whether they want to use data versioning, and initializes DVC based on input.
-  
-(2) `src/data_versioning/cli.py`  -This script downloads data from the bucket
 
 (3) `src/data_versioning/Pipefile` and `src/data_versioning/Pipefile.lock` are used to manage project dependencies and their versions as in the other containers.
 
@@ -162,9 +160,23 @@ dvc push
 
 *TFRecords Container*
 
-- This container converts input data into TFRecords files.
+- This container converts input data into TFRecords files. Note that the dataset is featurized in the same way in the *Model Training Container* as well. This was done to compare using TFRecords vs using pre-fetched TFData for model training. 
 
-(1) `src/tfrecords/tfrecords.py` - This script is an exerpt from model training script with incorporation of TFRecords instead of TFData.
+(1) `src/tfrecords/tfrecords.py` - This script reads the text and image inputs for each sample and the associated label, and converts and shards samples into TFRecord files. 
+- Images are normalized, resized before being converted to bytes
+- Texts are featurized using a BERT preprocessor into 3 bert inputs: (text_input_mask, text_input_type_ids, text_input_word_ids)
+
+Current tensorflow Example structure:
+
+```
+    feature_dict = {
+        'image': bytes_list,
+        'text_input_mask': int64_list,
+        'text_input_type_ids': int64_list,
+        'text_input_word_ids': int64_list,
+        'label': int64_list,
+    }
+```
 
 (2) `requirements.txt` Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
 
