@@ -187,12 +187,12 @@ dvc push
 - The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B
 - The resulting model checkpoints of each training runs are stored as artifacts in W&B and can be easily reloaded to perform inference. 
 
-(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs it can find in the host environment. In our case, we were only able to recieve quota for 1 GPU, and we configured a VM that has one GPU to run this.
+(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes (as seperate W&B runs). Model artifacts and metrics are all stored in respective W&B runs. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs ( 1 GPU in our case given quota limit).
 
-It takes in a configuration `.json` (here as example `train_cli_example_input.json`) file that has the following arguments:
+It takes in a configuration `.json` file (here as example `train_cli_example_input.json`) that has the following arguments:
 
 > > --batch_size [int] : the size of batches used to train the model
-> > --layer_size [int] : the size of the adjustable dense layer
+> > --layer_sizes list[int] : the size of the adjustable dense layer. * this is a list as the script tries all of the layer sizes specified. 
 > > --max_epochs [int] : a parameter to define the max number of epochs for model training
 > > --train_path [string] : path to training metadata
 > > --val_path [string] : path to validation metadata
