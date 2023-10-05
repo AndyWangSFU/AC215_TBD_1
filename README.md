@@ -74,7 +74,7 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 We address each of the objectives for Milestone 3 in the following ways:
 
-1. *Integrate Distributed Computing and Cloud Storage*
+*1. Integrate Distributed Computing and Cloud Storage*
 
 [add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
 
@@ -83,11 +83,11 @@ We address each of the objectives for Milestone 3 in the following ways:
 Figure 2: Google Cloud Platform being used to store different versions of training and test data
 
 
-2. *Utilize TensorFlow for Data Management*
+*2. Utilize TensorFlow for Data Management*
 
 We built a TFRecords container and have generated some TFRecords files which we have tested for use in training our model. We also tested TFData for model training. We found that TFRecords did not streamline our pipeline significantly compared to TFData and was fairly slow to generate when implemented. Therefore, for now, we are performing model training with pre-fetched TFData files and it works well. We are keeping the TFRecords container in our repo because if we subsequently find TFRecords indeed provides large performance boosts, we aim to leverage TFRecords in Milestone 4.
 
-3. *Develop Advanced Training Workflows*
+*3. Develop Advanced Training Workflows*
 
 We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
 
@@ -104,10 +104,10 @@ Figure 3: screenshot of our Weights & Biases dashboard with model training chart
 
 (1) `src/preprocessing/data_loader.py`  - This script downloads and uploads data to and from GCP. There are two key functions:
 
-a)	"download" 
-Function: Download file from “file_path”
-Usage: python data_loader.py -d -f “file_path”
-Optional: -m number (max number of images to download)
+- a)	"download"
+      - Function: Download file from “file_path”
+      - Usage: python data_loader.py -d -f “file_path”
+      - Optional: -m number (max number of images to download)
 
 b)	"upload" 
 Function: Upload files in local “file_path” in the form of zipped files
