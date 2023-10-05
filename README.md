@@ -109,26 +109,26 @@ Figure 3: screenshot of our Weights & Biases dashboard with model training chart
         Usage: python data_loader.py -d -f “file_path”
         Optional: -m number (max number of images to download)
 
-b)	"upload" 
-Function: Upload files in local “file_path” in the form of zipped files
-Usage: python data_loader.py -u -f “file_path”
-Optional: -b number (number of images in a zipfile to upload)
+- b)	"upload"
+-       Function: Upload files in local “file_path” in the form of zipped files
+-       Usage: python data_loader.py -u -f “file_path”
+-       Optional: -b number (number of images in a zipfile to upload)
 
 (2) `src/preprocessing/process.py`  - This script performs the preprocessing steps on the metadata and images. There are three key functions:
 
-a)	"update_metadata"
-Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in.a folder called “cleaned metadata”.
-Usage: python process.py -c --inpath “path_to_metadata” -f “path_to_images” –outname “name_of_new_metadata”
+- a)	"update_metadata"
+-       Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in.a folder called “cleaned metadata”.
+-       Usage: python process.py -c --inpath “path_to_metadata” -f “path_to_images” –outname “name_of_new_metadata”
 
-b)	"process" 
-Function: Process the images inside a folder. Read them if possible and resize it. Optionally, users can choose to augment the images. The processed imaged are stored in a folder called “public_image_set” + args.pro_suf.
-Usage: python data_loader.py -p -f “path_to_images” -s image_dimension
-Optional: -a (to do augmentation). -- pro_suf “suffix_to_name_the_folder”
+- b)	"process"
+-       Function: Process the images inside a folder. Read them if possible and resize it. Optionally, users can choose to augment the images. The processed imaged are stored in a folder called “public_image_set” + args.pro_suf.
+-       Usage: python data_loader.py -p -f “path_to_images” -s image_dimension
+-       Optional: -a (to do augmentation). -- pro_suf “suffix_to_name_the_folder”
 
-c)	"augment" 
-Function: Augment the images while processing. When an image is processed, it can also be augmented to create several augmented images. The number of augmented images per image processed can be declared by args.augment_num or -n number. The processed imaged are stored in a folder called “public_image_set” + args.aug_suf.
-Usage: python data_loader.py -p -f “path_to_images” -s image_dimension -a
-Optional: -- aug_suf “suffix_to_name_the_folder”. -n number.
+- c)	"augment"
+-       Function: Augment the images while processing. When an image is processed, it can also be augmented to create several augmented images. The number of augmented images per image processed can be declared by args.augment_num or -n number. The processed imaged are stored in a folder called “public_image_set” + args.aug_suf.
+-       Usage: python data_loader.py -p -f “path_to_images” -s image_dimension -a
+-       Optional: -- aug_suf “suffix_to_name_the_folder”. -n number.
 
 (3) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Numpy`, `opencv-python-headless`, `Pillow`, `albumentations`, `google-cloud-storage`, `pandas`  
 
