@@ -12,8 +12,6 @@ Project Organization
       ├── requirements.txt
       ├── .gitignore
       ├── .gitattributes
-      ├── .dvcignore
-      ├── .dvc
       ├── reports
       └── src
             ├── preprocessing
@@ -34,8 +32,6 @@ Project Organization
             │   └── dvc_cli.sh
             ├── models
             │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
             │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
             │   ├── run_docker.sh
@@ -43,8 +39,6 @@ Project Organization
             │   └── train_cli_example_input.json
             ├── tfrecords
             │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
             │   ├── requirements.txt
             │   └── tfrecords.py      
 
@@ -171,6 +165,7 @@ dvc push
 - This container converts input data into TFRecords files.
 
 (1) `src/tfrecords/tfrecords.py` - This script is an exerpt from model training script with incorporation of TFRecords instead of TFData.
+(2) `requirements.txt" Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
 
  
 *Model Training Container*
@@ -190,10 +185,11 @@ It takes in a configuration `.json` file (here as example `train_cli_example_inp
 > > --train_path [string] : path to training metadata
 > > --val_path [string] : path to validation metadata
 > > --input_mode [string]: mode of input, current it only support TFData
+(2) `requirements.txt" Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
 
-(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0. as the base image.
+(3) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0. as the base image.
 
-(3) `src/models/run_docker.sh` Shell script to run the container
+(4) `src/models/run_docker.sh` Shell script to run the container
 
 To run Dockerfile:
 1. `docker build -t training -f Dockerfile .`
