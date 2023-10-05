@@ -52,7 +52,7 @@ Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
 TBD_1
 
 **Project**
-In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. 
+In this project we aim to build and deploy a model that can detect fake content when text and images are provided as inputs. 
 
 ### Milestone3
 
