@@ -209,7 +209,7 @@ It takes in a configuration `.json` file (here as example `train_cli_example_inp
 > > --val_path [string] : path to validation metadata
 > > --input_mode [string]: mode of input, current it only support TFData
 
-Example script to run: `python3 multimodal_binary_training.py train_cli_example_input.json`
+How to run: `python3 multimodal_binary_training.py train_cli_example_input.json`
 
 (2) `requirements.txt` Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
 
