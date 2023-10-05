@@ -35,7 +35,6 @@ Project Organization
             │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
             │   ├── run_docker.sh
-            │   ├── train.py
             │   └── train_cli_example_input.json
             ├── tfrecords
             │   ├── Dockerfile
