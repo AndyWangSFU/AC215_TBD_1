@@ -1,4 +1,4 @@
-<img width="1260" alt="image" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/d412a056-e1a5-4061-b652-656f3b71a44c">AC215-Template (Milestone3)
+(Milestone3)
 ==============================
 
 AC215 - Milestone3
@@ -30,7 +30,6 @@ Project Organization
             │   ├── .dvcignore
             │   ├── Pipfile
             │   ├── Pipfile.lock
-            │   ├── README.md
             │   ├── .dvc
             │   └── dvc_cli.sh
             ├── models
@@ -146,9 +145,36 @@ pipenv install -r requirements.txt
 
 **Data Versioning Container**
 
+- This container sets up data versioning for data in this project.
 
-**TFRecoed container**
+(1) `src/data_versioninig/dvc_cli.sh` - This script mounts the GCP bucket, asks the user whether they want to use data versioning, and initializes DVC based on input.
+  
+(2) `src/data_versioning/cli.py`  -This script downloads data from the bucket
 
+(3) `src/data_versioning/Pipefile` and `src/data_versioning/Pipefile.lock` are used to manage project dependencies and their versions as in the other containers.
+
+(4) `src/data_versioning/Dockerfile` Dockerfile to build the container for data versioning
+
+(5) `src/data_versioning/docker-shell.sh` Run this shell script to build and run the container
+
+To run Dockerfile - 
+make sure ac215-tbd-1.json is downloaded into src//secrets/ to enable GCP authentication
+```
+cd src/data_versioning/
+sh docker-shell.sh
+
+# initialize dvc tracking
+dvc init
+dvc remote add -d image_dataset gs://fakenew_classifier_data_bucket/dvc_store
+dvc add public_image_set
+dvc push
+```
+
+**TFRecords Container**
+
+- This container converts input data into TFRecords files.
+
+(1) `src/tfrecords/tfrecords.py` - This script is an exerpt from model training script with incorporation of TFRecords instead of TFData.
 
  
 **Model Training Container**
@@ -177,5 +203,3 @@ To run Dockerfile:
 1. `docker build -t training -f Dockerfile .`
 2. `sh run_docker.sh`
 
-**Notebooks** 
-This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
