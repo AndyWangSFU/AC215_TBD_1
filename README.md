@@ -168,9 +168,8 @@ cd src/data_versioning/
 sh docker-shell.sh
 
 # initialize dvc tracking
-dvc init
-dvc remote add -d image_dataset gs://fakenew_classifier_data_bucket/dvc_store
-dvc add public_image_set
+sh dvc_cli.sh
+dvc add data_file/folder
 dvc push
 ```
 
@@ -199,7 +198,7 @@ It takes in a configuration `.json` (here as example `train_cli_example_input.js
 > > --val_path [string] : path to validation metadata
 > > --input_mode [string]: mode of input, current it only support TFData
 
-(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu as the base image for version 2.13.0.
+(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0. as the base image.
 
 (3) `src/models/run_docker.sh` Shell script to run the container
 
