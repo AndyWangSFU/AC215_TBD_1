@@ -106,8 +106,8 @@ Figure 3: screenshot of our Weights & Biases dashboard with model training chart
 
 - a)	"download"
 -       Function: Download file from “file_path”
-        Usage: python data_loader.py -d -f “file_path”
-        Optional: -m number (max number of images to download)
+-       Usage: python data_loader.py -d -f “file_path”
+-       Optional: -m number (max number of images to download)
 
 - b)	"upload"
 -       Function: Upload files in local “file_path” in the form of zipped files
