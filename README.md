@@ -62,7 +62,8 @@ We address each of the objectives for Milestone 3 in the following ways:
 
 *1. Integrate Distributed Computing and Cloud Storage*
 
-[add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
+For distributed computing, we did not need to us Dask or PySpark as our metadata fit into memory perfectly. However, our model training pipeline was written using TFData, which effectively enables batch preprocesing and training as well as prefetching.   
+For cloud storage, we have used Google Cloud Storage (GCS) to store our images/text as it supports the vast scale of these datasets. All preprocessing and model training were done on GCP VMs with appropriate resources provisioned.
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
