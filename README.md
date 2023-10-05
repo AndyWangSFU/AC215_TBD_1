@@ -96,9 +96,9 @@ We train our model using both text and image data. We implement experiment track
 Figure 3: screenshot of our Weights & Biases dashboard with model training charts
 
 
-#### Code Structure
+<ins>**Code Structure**</ins>
 
-**Data Pre-Processing Container**
+*Data Pre-Processing Container*
 
 - This container downloads data from the Google Cloud Bucket, processes the image metadata, processes/augments the images themselves, and stores the data back to GCP.
 
@@ -147,7 +147,7 @@ docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preproces
 pipenv install -r requirements.txt
 ```
 
-**Data Versioning Container**
+*Data Versioning Container*
 
 - This container sets up data versioning for data in this project.
 
@@ -174,14 +174,14 @@ dvc add public_image_set
 dvc push
 ```
 
-**TFRecords Container**
+*TFRecords Container*
 
 - This container converts input data into TFRecords files.
 
 (1) `src/tfrecords/tfrecords.py` - This script is an exerpt from model training script with incorporation of TFRecords instead of TFData.
 
  
-**Model Training Container**
+*Model Training Container*
 
 - This container contains all our training scripts and modeling components. 
 - It currently takes in a `.json` file that has the path to the cleaned metadata, image directory, and several model architectural and training hyperparameters.
