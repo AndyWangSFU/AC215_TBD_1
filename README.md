@@ -75,7 +75,7 @@ We built a TFRecords container and have generated some TFRecords files which we 
 
 *3. Develop Advanced Training Workflows*
 
-We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
+We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs are available (we could not get a quota for more than 1 GPU for any region).
 
 <img width="1271" alt="Screenshot 2023-10-04 at 7 22 14 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f204bf95-e939-4cd5-91dc-768b726bd692">
 
@@ -103,7 +103,7 @@ Figure 2: screenshot of our Weights & Biases dashboard with model training chart
 (2) `src/preprocessing/process.py`  - This script performs the preprocessing steps on the metadata and images. There are three key functions:
 
 - a)	"update_metadata"
--       Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in.a folder called “cleaned metadata”.
+-       Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in a folder called “cleaned metadata”.
 -       Usage: python process.py -c --inpath “path_to_metadata” -f “path_to_images” –outname “name_of_new_metadata”
 
 - b)	"process"
@@ -139,7 +139,7 @@ pipenv install -r requirements.txt
 
 (1) `src/data_versioninig/dvc_cli.sh` - This script mounts the GCP bucket, asks the user whether they want to use data versioning, and initializes DVC based on input.
 
-(3) `src/data_versioning/Pipefile` and `src/data_versioning/Pipefile.lock` are used to manage project dependencies and their versions as in the other containers.
+(3) `src/data_versioning/Pipfile` and `src/data_versioning/Pipfile.lock` are used to manage project dependencies and their versions as in the other containers.
 
 (4) `src/data_versioning/Dockerfile` Dockerfile to build the container for data versioning
 
@@ -161,7 +161,7 @@ dvc push
 
 - This container converts input data into TFRecords files. Note that the dataset is featurized in the same way in the *Model Training Container* as well. This was done to compare using TFRecords vs using pre-fetched TFData for model training. 
 
-- Image inputs are normalized, resized before  converted to bytes
+- Image inputs are normalized, resized before converted to bytes
 - Text inputs are featurized using a BERT preprocessor into 3 bert inputs: (text_input_mask, text_input_type_ids, text_input_word_ids)
 
 Current tensorflow Example structure:
@@ -178,9 +178,9 @@ Current tensorflow Example structure:
 
 (1) `src/tfrecords/tfrecords.py` - This script reads the text and image inputs for each sample and the associated label, and converts and shards samples into TFRecord files. 
 
-(2) `requirements.txt` Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
+(2) `requirements.txt` - Python dependencies are managed through pip in this container and dependencies are listed in requirements.txt.
 
-The container is currently run locally, while we are hoping to run this container on GCP eventually. To run the container:
+The container is currently run locally, although we are hoping to run this container on GCP eventually. To run the container:
 ```
 docker build --platform=linux/amd64/v4 -t tbd1-tfrecords -f Dockerfile .
 docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-tfrecords
@@ -194,10 +194,10 @@ pipenv install -r requirements.txt
 
 - This container contains all our training scripts and modeling components. 
 - It currently takes in a `.json` file that has the path to the cleaned metadata, image directory, and several model architectural and training hyperparameters.
-- The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B
+- The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B.
 - The resulting model checkpoints of each training runs are stored as artifacts in W&B and can be easily reloaded to perform inference. 
 
-(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes (as seperate W&B runs). Model artifacts and metrics are all stored in respective W&B runs. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs ( 1 GPU in our case given quota limit).
+(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes (as seperate W&B runs). Model artifacts and metrics are all stored in respective W&B runs. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs (1 GPU in our case given quota limit).
 
 It takes in a configuration `.json` file (here as example `train_cli_example_input.json`) that has the following arguments:
 
@@ -210,11 +210,11 @@ It takes in a configuration `.json` file (here as example `train_cli_example_inp
 
 How to run: `python3 multimodal_binary_training.py train_cli_example_input.json`
 
-(2) `requirements.txt` Python dependencies are managed through pip in this container and dependencies are listed in requirments.txt.
+(2) `requirements.txt` - Python dependencies are managed through pip in this container and dependencies are listed in requirements.txt.
 
 (3) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0. as the base image.
 
-(4) `src/models/run_docker.sh` Shell script to run the container
+(4) `src/models/run_docker.sh` - Shell script to run the container
 
 To run Dockerfile:
 1. `docker build -t training -f Dockerfile .`
