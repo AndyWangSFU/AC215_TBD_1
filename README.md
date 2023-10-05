@@ -62,6 +62,9 @@ TBD_1
 **Project**
 In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. 
 
+![AC215_TBD_1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/53b18850-f0d1-47a4-8f78-71724c18faff)
+Figure 1: Project data pipeline
+
 ### Milestone3
 
 **Objectives for Milestone3**
@@ -74,7 +77,7 @@ We address each of the objectives for Milestone 3 in the following ways:
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
-Figure 1: Google Cloud Platform being used to store different versions of training and test data
+Figure 2: Google Cloud Platform being used to store different versions of training and test data
 
 
 2. Utilize TensorFlow for Data Management
@@ -87,26 +90,59 @@ We train our model using both text and image data. We implement experiment track
 
 <img width="1271" alt="Screenshot 2023-10-04 at 7 22 14 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f204bf95-e939-4cd5-91dc-768b726bd692">
 
-Figure 2: screenshot of our Weights & Biases dashboard with model training charts
+Figure 3: screenshot of our Weights & Biases dashboard with model training charts
 
 
 #### Code Structure
 
-**Data Pre-Processing Container** [to be adjusted]
+**Data Pre-Processing Container**
 
-- This container downloads data from the Google Cloud Bucket, resizes and processes the data, stores it back to GCP.
-- Our inputs for this container depend on whether an image is simply being resized or augmented. For image resizing, the main parameter is size of output image. If augmenting image, parameters is the extent of augmentation (e.g., 5X) and the size of output images.
-- In addition, the container downloads the metadata for the images from Google Cloud Bucket, filters and cleans the metadata for images that are uncorrupted, and stores this filtered metadata back into GCP.
-- The rationale for not downloading the images themselves and preprocessing them is that the image dataset is very large and has already been preprocessed. We only need to check for whether an image is uncorrupted or not. Similarly, the text data that we use to train and test our model has already been pre-processed. We therefore leave these in the GCP as well and do not download them using our pre-processing container. 
-- Output from this container stored at GCS location
+- This container downloads data from the Google Cloud Bucket, processes the image metadata, processes/augments the images themselves, and stores the data back to GCP.
 
-(1) `src/datapipeline/dataloader.py`  - This script loads the original immutable data to our compute instance's local `raw` folder for processing.
+(1) `src/preprocessing/data_loader.py`  - This script downloads and uploads data to and from GCP. There are two key functions:
 
-(2) `src/datapipeline/build_records.py`  - Loads a local copy of the dataset, processes it according to our new transformations, converts it to TFRecords, and pushes it to a GCP bucket sink.
+a)	"download" 
+Function: Download file from “file_path”
+Usage: python data_loader.py -d -f “file_path”
+Optional: -m number (max number of images to download)
 
-(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+b)	"upload" 
+Function: Upload files in local “file_path” in the form of zipped files
+Usage: python data_loader.py -u -f “file_path”
+Optional: -b number (number of images in a zipfile to upload)
 
-To run Dockerfile - `Instructions here`
+(2) `src/preprocessing/process.py`  - This script performs the preprocessing steps on the metadata and images. There are three key functions:
+
+a)	"update_metadata"
+Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in.a folder called “cleaned metadata”.
+Usage: python process.py -c --inpath “path_to_metadata” -f “path_to_images” –outname “name_of_new_metadata”
+
+b)	"process" 
+Function: Process the images inside a folder. Read them if possible and resize it. Optionally, users can choose to augment the images. The processed imaged are stored in a folder called “public_image_set” + args.pro_suf.
+Usage: python data_loader.py -p -f “path_to_images” -s image_dimension
+Optional: -a (to do augmentation). -- pro_suf “suffix_to_name_the_folder”
+
+c)	"augment" 
+Function: Augment the images while processing. When an image is processed, it can also be augmented to create several augmented images. The number of augmented images per image processed can be declared by args.augment_num or -n number. The processed imaged are stored in a folder called “public_image_set” + args.aug_suf.
+Usage: python data_loader.py -p -f “path_to_images” -s image_dimension -a
+Optional: -- aug_suf “suffix_to_name_the_folder”. -n number.
+
+(3) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Numpy`, `opencv-python-headless`, `Pillow`, `albumentations`, `google-cloud-storage`, `pandas`  
+
+(4) `src/preprocessing/Pipefile` and `src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
+
+(5) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+
+To run Dockerfile - 
+make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/ to enable GCP authentication
+```
+cd src/preprocessing/
+docker build -t tbd1-preprocess -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
+```
 
 **Data Versioning Container**
 
