@@ -20,10 +20,10 @@ WORKDIR /app
 
 # Add Pipfile, Pipfile.lock
 ADD requirements.txt /app/
+ADD *.py /app/
 RUN pip install -r requirements.txt && \
-apt-get install -y libcublas-12-0
-# Source code
-ADD . /app
+apt-get install -y libcublas-12-0 
+
 
 # Entry point
 ENTRYPOINT ["/bin/bash"]

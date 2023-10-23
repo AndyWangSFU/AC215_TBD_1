@@ -1,6 +1,8 @@
-google-auth==2.23.0
-google-auth-oauthlib==1.0.0
-google-pasta==0.2.0
+google-auth
+google-auth-oauthlib
+google-pasta
+google-cloud-core
+google-cloud-storage
 grpcio==1.58.0
 h5py==3.9.0
 idna==3.4
@@ -84,5 +86,3 @@ Werkzeug==2.3.7
 wrapt==1.15.0
 yarl==1.9.2
 wandb
-
-

@@ -84,7 +84,7 @@ def preprocess_text_and_image(sample):
 
 
 auto = tf.data.AUTOTUNE
-def prepare_dataset(dataframe, training=True):
+def prepare_dataset(dataframe, batch_size, training=True):
     ds = dataframe_to_dataset(dataframe)
     ds = ds.map(lambda x, y: (preprocess_text_and_image(x), y)).cache()
     ds = ds.batch(batch_size).prefetch(auto)
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         
         train_df = pd.read_csv(train_path, sep="\t")
         val_df = pd.read_csv(val_path, sep="\t")
-
+    
 
         """Turn metadata into tf.data.Dataset objects"""
         train_ds = prepare_dataset(train_df)
@@ -256,7 +256,7 @@ if __name__ == "__main__":
             )
 
         wandb.init(
-            project = 'model_training',
+            project = ' ',
             config = {
             "learning_rate": learning_rate,
             "epochs": max_epochs,
