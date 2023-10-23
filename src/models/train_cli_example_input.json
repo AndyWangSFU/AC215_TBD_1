@@ -1,0 +1,9 @@
+{
+    "batch_size": 16,
+    "layer_size": [244,128,64],
+    "learning_rate" : 0.001,
+    "max_epochs": 1,
+    "train_path": "./data/multimodal_validate_cleaned.tsv",
+    "val_path": "./data/multimodal_test_cleaned.tsv",
+    "input_mode" : "tf_data"
+  }

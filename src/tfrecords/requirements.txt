@@ -1,0 +1,6 @@
+numpy
+pandas
+google-cloud-storage
+tensorflow
+tensorflow_hub
+tensorflow_text

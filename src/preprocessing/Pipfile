@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+albumentations = "*"
+google-cloud-storage = "*"
+numpy = "*"
+opencv-python-headless = "*"
+pillow = "*"
+pandas = "*"
+
+[requires]
+python_version = "3.9"

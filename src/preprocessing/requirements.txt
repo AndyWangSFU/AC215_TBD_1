@@ -1,1 +1,6 @@
-scikit-learn
+numpy
+opencv-python-headless
+Pillow
+albumentations
+google-cloud-storage
+pandas

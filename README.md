@@ -1,7 +1,7 @@
-AC215-Template (Milestone2)
+Milestone3
 ==============================
 
-AC215 - Milestone2
+AC215 - Milestone3
 
 Project Organization
 ------------
@@ -10,62 +10,213 @@ Project Organization
       ├── notebooks
       ├── references
       ├── requirements.txt
-      ├── setup.py
+      ├── .gitignore
+      ├── .gitattributes
+      ├── reports
       └── src
             ├── preprocessing
             │   ├── Dockerfile
-            │   ├── preprocess.py
-            │   └── requirements.txt
-            └── validation
-                  ├── Dockerfile
-                  ├── cv_val.py
-                  └── requirements.txt
+            │   ├── data_loader.py
+            │   ├── process.py
+            │   ├── requirements.txt
+            │   ├── Pipfile
+            │   └── Pipfile.lock
+            ├── data_versioning
+            │   ├── Dockerfile
+            │   ├── cli.py
+            │   ├── docker-shell.sh
+            │   ├── .dvcignore
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── .dvc
+            │   └── dvc_cli.sh
+            ├── models
+            │   ├── Dockerfile
+            │   ├── multimodal_binary_training.py
+            │   ├── requirements.txt
+            │   ├── run_docker.sh
+            │   └── train_cli_example_input.json
+            ├── tfrecords
+            │   ├── Dockerfile
+            │   ├── requirements.txt
+            │   └── tfrecords.py      
 
 
 --------
-# AC215 - Milestone2 - ButterFlyer
+# AC215 - Milestone3 - “Multimodal Fake News Detector”
 
 **Team Members**
-Pavlov Protovief, Paolo Primopadre and Pablo El Padron
+Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
 
 **Group Name**
-Awesome Group
+TBD_1
 
 **Project**
-In this project we aim to develop an application that can identify various species of butterflies in the wild using computer vision and offer educational content through a chatbot interface.
+In this project we aim to build and deploy a model that can detect fake content when text and images are provided as inputs. 
 
-### Milestone2 ###
+### Milestone3
 
-We gathered dataset of 1M butterflies representing 17K species. Our dataset comes from following sources - (1),(2),(3) with approx 100GB in size. We parked our dataset in a private Google Cloud Bucket. 
+<ins>**Objectives for Milestone3**</ins>
 
-**Preprocess container**
-- This container reads 100GB of data and resizes the image sizes and stores it back to GCP
-- Input to this container is source and destincation GCS location, parameters for resizing, secrets needed - via docker
-- Output from this container stored at GCS location
+We address each of the objectives for Milestone 3 in the following ways:
 
-(1) `src/preprocessing/preprocess.py`  - Here we do preprocessing on our dataset of 100GB, we reduce the image sizes (a parameter that can be changed later) to 128x128 for faster iteration with our process. Now we have dataset at 10GB and saved on GCS. 
+*1. Integrate Distributed Computing and Cloud Storage*
 
-(2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `special butterfly package` 
+For distributed computing, we did not need to us Dask or PySpark as our metadata fit into memory perfectly. However, our model training pipeline was written using TFData, which effectively enables batch preprocesing and training as well as prefetching. Moreover, the training script will automatically parallize training over all avaliable GPUs. For cloud storage, we have used Google Cloud Storage (GCS) to store our images/text as it supports the vast scale of these datasets. All preprocessing and model training were done on GCP VMs with appropriate resources provisioned.
 
-(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
-To run Dockerfile - `Instructions here`
+Figure 1: Google Cloud Platform being used to store different versions of training and test data
 
-**Cross validation, Data Versioning**
-- This container reads preprocessed dataset and creates validation split and uses dvc for versioning.
-- Input to this container is source GCS location, parameters if any, secrets needed - via docker
-- Output is flat file with cross validation splits
-  
-(1) `src/validation/cv_val.py` - Since our dataset is quite large we decided to stratify based on species and kept 80% for training and 20% for validation. Our metrics will be monitored on this 20% validation set. 
 
-(2) `requirements.txt` - We used following packages to help us with cross validation here - `iterative-stratification` 
+*2. Utilize TensorFlow for Data Management*
 
-(3) `src/validation/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+We built a TFRecords container and have generated some TFRecords files which we have tested for use in training our model. We also tested TFData for model training. We found that TFRecords did not streamline our pipeline significantly compared to TFData and was fairly slow to generate when implemented. Therefore, for now, we are performing model training with pre-fetched TFData files and it works well. We are keeping the TFRecords container in our repo because if we subsequently find TFRecords indeed provides large performance boosts, we aim to leverage TFRecords in Milestone 4.
 
-To run Dockerfile - `Instructions here`
+*3. Develop Advanced Training Workflows*
 
-**Notebooks** 
-This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
+We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs are available (we could not get a quota for more than 1 GPU for any region).
 
-----
-You may adjust this template as appropriate for your project.
+<img width="1271" alt="Screenshot 2023-10-04 at 7 22 14 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f204bf95-e939-4cd5-91dc-768b726bd692">
+
+Figure 2: screenshot of our Weights & Biases dashboard with model training charts
+
+
+<ins>**Code Structure**</ins>
+
+*Data Pre-Processing Container*
+
+- This container downloads data from the Google Cloud Bucket, processes the image metadata, processes/augments the images themselves, and stores the data back to GCP.
+
+(1) `src/preprocessing/data_loader.py`  - This script downloads and uploads data to and from GCP. There are two key functions:
+
+- a)	"download"
+-       Function: Download file from “file_path”
+-       Usage: python data_loader.py -d -f “file_path”
+-       Optional: -m number (max number of images to download)
+
+- b)	"upload"
+-       Function: Upload files in local “file_path” in the form of zipped files
+-       Usage: python data_loader.py -u -f “file_path”
+-       Optional: -b number (number of images in a zipfile to upload)
+
+(2) `src/preprocessing/process.py`  - This script performs the preprocessing steps on the metadata and images. There are three key functions:
+
+- a)	"update_metadata"
+-       Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in a folder called “cleaned metadata”.
+-       Usage: python process.py -c --inpath “path_to_metadata” -f “path_to_images” –outname “name_of_new_metadata”
+
+- b)	"process"
+-       Function: Process the images inside a folder. Read them if possible and resize it. Optionally, users can choose to augment the images. The processed imaged are stored in a folder called “public_image_set” + args.pro_suf.
+-       Usage: python data_loader.py -p -f “path_to_images” -s image_dimension
+-       Optional: -a (to do augmentation). -- pro_suf “suffix_to_name_the_folder”
+
+- c)	"augment"
+-       Function: Augment the images while processing. When an image is processed, it can also be augmented to create several augmented images. The number of augmented images per image processed can be declared by args.augment_num or -n number. The processed imaged are stored in a folder called “public_image_set” + args.aug_suf.
+-       Usage: python data_loader.py -p -f “path_to_images” -s image_dimension -a
+-       Optional: -- aug_suf “suffix_to_name_the_folder”. -n number.
+
+(3) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Numpy`, `opencv-python-headless`, `Pillow`, `albumentations`, `google-cloud-storage`, `pandas`  
+
+(4) `src/preprocessing/Pipefile` and `src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
+
+(5) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+
+To run Dockerfile - 
+make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/ to enable GCP authentication
+```
+cd src/preprocessing/
+docker build -t tbd1-preprocess -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
+```
+
+*Data Versioning Container*
+
+- This container sets up data versioning for data in this project.
+
+(1) `src/data_versioninig/dvc_cli.sh` - This script mounts the GCP bucket, asks the user whether they want to use data versioning, and initializes DVC based on input.
+
+(3) `src/data_versioning/Pipfile` and `src/data_versioning/Pipfile.lock` are used to manage project dependencies and their versions as in the other containers.
+
+(4) `src/data_versioning/Dockerfile` Dockerfile to build the container for data versioning
+
+(5) `src/data_versioning/docker-shell.sh` Run this shell script to build and run the container
+
+To run Dockerfile - 
+make sure ac215-tbd-1.json is downloaded into src//secrets/ to enable GCP authentication
+```
+cd src/data_versioning/
+sh docker-shell.sh
+
+# initialize dvc tracking
+sh dvc_cli.sh
+dvc add data_file/folder
+dvc push
+```
+
+*TFRecords Container*
+
+- This container converts input data into TFRecords files. Note that the dataset is featurized in the same way in the *Model Training Container* as well. This was done to compare using TFRecords vs using pre-fetched TFData for model training. 
+
+- Image inputs are normalized, resized before converted to bytes
+- Text inputs are featurized using a BERT preprocessor into 3 bert inputs: (text_input_mask, text_input_type_ids, text_input_word_ids)
+
+Current tensorflow Example structure:
+
+```
+    feature_dict = {
+        'image': bytes_list,
+        'text_input_mask': int64_list,
+        'text_input_type_ids': int64_list,
+        'text_input_word_ids': int64_list,
+        'label': int64_list,
+    }
+```
+
+(1) `src/tfrecords/tfrecords.py` - This script reads the text and image inputs for each sample and the associated label, and converts and shards samples into TFRecord files. 
+
+(2) `requirements.txt` - Python dependencies are managed through pip in this container and dependencies are listed in requirements.txt.
+
+The container is currently run locally, although we are hoping to run this container on GCP eventually. To run the container:
+```
+docker build --platform=linux/amd64/v4 -t tbd1-tfrecords -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-tfrecords
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
+```
+
+ 
+*Model Training Container*
+
+- This container contains all our training scripts and modeling components. 
+- It currently takes in a `.json` file that has the path to the cleaned metadata, image directory, and several model architectural and training hyperparameters.
+- The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B.
+- The resulting model checkpoints of each training runs are stored as artifacts in W&B and can be easily reloaded to perform inference. 
+
+(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes (as seperate W&B runs). Model artifacts and metrics are all stored in respective W&B runs. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs (1 GPU in our case given quota limit).
+
+It takes in a configuration `.json` file (here as example `train_cli_example_input.json`) that has the following arguments:
+
+> > --batch_size [int] : the size of batches used to train the model
+> > --layer_sizes list[int] : the size of the adjustable dense layer. * this is a list as the script tries all of the layer sizes specified. 
+> > --max_epochs [int] : a parameter to define the max number of epochs for model training
+> > --train_path [string] : path to training metadata
+> > --val_path [string] : path to validation metadata
+> > --input_mode [string]: mode of input, current it only support TFData
+
+How to run: `python3 multimodal_binary_training.py train_cli_example_input.json`
+
+(2) `requirements.txt` - Python dependencies are managed through pip in this container and dependencies are listed in requirements.txt.
+
+(3) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0. as the base image.
+
+(4) `src/models/run_docker.sh` - Shell script to run the container
+
+To run Dockerfile:
+1. `docker build -t training -f Dockerfile .`
+2. `sh run_docker.sh`
+
