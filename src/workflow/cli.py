@@ -82,8 +82,8 @@ def main(args=None):
                 image=MODEL_COMPRESSION_IMAGE,
                 command=[],
                 args=[
-                    "downsize.py",
-                    "-raw_model_path 'models/raw_models'  --quantization_type 'float16'  --hidden_layer_size 224  --learn_rate 0.001  --epochs 20  --batch_size 16  --metadata_path 'new_data/new_metadata'  --images_path 'new_data/new_images'   --new_data_size 41   --wandb '66f5d9722b4bef56a139f86a08c40f3929f97470' "
+                    "downsize_model.py",
+                    "--raw_model_path models/raw_models  --quantization_type float16  --hidden_layer_size 224  --learn_rate 0.001  --epochs 20  --batch_size 16  --metadata_path new_data/new_metadata  --images_path new_data/new_images   --new_data_size 41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470"
                 ],
             )
             return container_spec
