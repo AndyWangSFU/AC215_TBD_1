@@ -107,7 +107,7 @@ if __name__ == "__main__":
         description='Upload/Download/Process images from GCS bucket')
 
     parser.add_argument("-d", "--download", action='store_true',
-                        help="Download paragraph of text from GCS bucket")
+                        help="Download image from GCS bucket")
 
     parser.add_argument("-u", "--upload", action='store_true',
                         help="Upload image to GCS bucket")

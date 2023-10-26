@@ -1,0 +1,45 @@
+# PIPELINE DEFINITION
+# Name: ml-pipeline
+components:
+  comp-download:
+    executorLabel: exec-download
+  comp-process:
+    executorLabel: exec-process
+deploymentSpec:
+  executors:
+    exec-download:
+      container:
+        args:
+        - data_loader.py
+        - '-d '
+        - -m 10
+        image: kirinlfc/fakenews-detector-data-preprocessor
+    exec-process:
+      container:
+        args:
+        - process.py
+        - '-p '
+        image: kirinlfc/fakenews-detector-data-preprocessor
+pipelineInfo:
+  name: ml-pipeline
+root:
+  dag:
+    tasks:
+      download:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-download
+        taskInfo:
+          name: download
+      process:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-process
+        dependentTasks:
+        - download
+        taskInfo:
+          name: process
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0
