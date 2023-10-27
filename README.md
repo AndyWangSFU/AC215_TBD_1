@@ -117,19 +117,20 @@ Below, we can see our Weights & Biases page while training our compression model
 
 The workflow container follows a similar structure as the class demo. (Reference: https://github.com/dlops-io/ml-workflow#mushroom-app-ml-workflow-management). To activate the docker environment, run `sh docker-shell.sh`, and it will activate the environment with all necessary environment variables (GCP project name, service account, data bucket, and region). The GCP authentication steps are done in `docker-entrypoint.sh`. 
 
-After the docker is running, we can call `python cli.py` to call the pipeline. There are 3 containers callable from `cli.py --- preprocessing` (to download and process the images), `models` (to train the models), and `model_compression` (to do model compression). These individual containers can be called as a single-element pipeline using `-d (download), -p(process), -t (model training), and -c (model compression)`. However, this is mainly for testing purpose. In real usage, use `python cli.py – w` to run the whole pipeline. The resulting pipeline can be visualized below on Vertex AI. 
+After the docker is running, we can call `python cli.py` to call the pipeline. There are 3 containers callable from `cli.py --- preprocessing` (to download and process the images), `models` (to train the models), and `model_compression` (to do model compression). These individual containers can be called as a single-element pipeline using `-d (download), -p(process), -t (model training), and -c (model compression)`. However, this is mainly for testing purposes. In real usage, use `python cli.py – w` to run the whole pipeline. The resulting pipeline can be visualized below on Vertex AI. 
 
+![Picture1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/629ddff3-9a8d-47f3-a4a9-f8c17aa3a678)
 
 
 *Figure: Pipeline run analysis*
 
 
-Behind the scene, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and pass preset arguments to call the corresponding functions. 
+Behind the scene, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
 DATA_PREPROCESS_IMAGE = "kirinlfc/fakenews-detector-data-preprocessor"
 MODEL_COMPRESSION_IMAGE = "ksiyang/multimodal_fakenews_detector_model_compression"
 MODEL_TRAIN_IMAGE = "ksiyang/model_training"
 
-In case anyone want to test the connection with Vertex AI, call python cli.py – s1. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
+In case anyone wants to test the connection with Vertex AI, call python cli.py – s1. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
 
 
 
