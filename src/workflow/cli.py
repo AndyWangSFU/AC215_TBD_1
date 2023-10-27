@@ -249,7 +249,7 @@ def main(args=None):
         # Define Component
         @dsl.component
         def add(x: float, y: float) -> float:
-            return x + y
+            return x + y 
 
         # Define Component
         @dsl.component
