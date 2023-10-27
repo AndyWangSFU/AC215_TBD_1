@@ -25,5 +25,5 @@ RUN pip install -r requirements.txt && \
 apt-get install -y libcublas-12-0 
 
 # Entry point
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash","./docker-entrypoint.sh"]
 

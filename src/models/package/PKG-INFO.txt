@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+
+Name: multimodal_fakenews_detector model training
+
+Version: 0.0.1
+
+License: Public
+
+Description: Demo
+
+Platform: Vertex
