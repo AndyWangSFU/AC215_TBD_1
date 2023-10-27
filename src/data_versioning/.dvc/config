@@ -1,4 +1,0 @@
-[core]
-    remote = mounted_remote
-['remote "mounted_remote"']
-    url = /mounted_bucket/dvc_store
