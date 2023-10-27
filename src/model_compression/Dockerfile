@@ -1,11 +1,9 @@
-FROM tensorflow/tensorflow:2.13.0
+FROM python:3.9-slim-bookworm
 
 # Tell pipenv where the shell is. 
 # This allows us to use "pipenv shell" as a container entry point.
 # run docker build -t training -f Dockerfile .
 ENV PYENV_SHELL=/bin/bash
-
-ENV GOOGLE_APPLICATION_CREDENTIALS=secrets/ac215-tbd-1.json
 
 # Ensure we have an up to date baseline, install dependencies 
 RUN set -ex; \
@@ -19,11 +17,11 @@ RUN set -ex; \
 WORKDIR /app
 
 # Add Pipfile, Pipfile.lock
-ADD requirements.txt /app/
-ADD *.py /app/
+ADD requirements.txt *.py /app/
+ADD *.sh /app/
 RUN pip install -r requirements.txt
 
 
 # Entry point
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash","docker-entrypoint.sh"]
 

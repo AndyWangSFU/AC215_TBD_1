@@ -1,4 +1,7 @@
-from multimodal_binary_training import *
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import logging
+from model_helpers import *
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text as text
@@ -15,10 +18,12 @@ import time
 import argparse
 import json
 import argparse
-import os
 from google.cloud import storage
 import pathlib
 import zipfile
+
+
+
 
 print("finished imports")
 GCP_PROJECT = "AC215"
@@ -168,7 +173,6 @@ def main():
    
 
     wandb.login(key=args.wandb)
-    run = wandb.init()
     
 
     download(config['metadata_path'], 2)
@@ -180,8 +184,7 @@ def main():
     batch_size = config["batch_size"]
     """Turn metadata into tf.data.Dataset objects"""
     val_ds = prepare_dataset(val_df,batch_size=batch_size, training=False)
-
-    # Initialize W&B
+    
     wandb.init(project="model_training")
 
     # Convert the model to TFLite
