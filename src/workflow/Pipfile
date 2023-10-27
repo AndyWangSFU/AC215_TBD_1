@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 google-cloud-aiplatform = "*"
 kfp = "*"
+google-cloud-pipeline-components = "*"
 
 [requires]
 python_version = "3.9"

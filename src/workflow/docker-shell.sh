@@ -10,7 +10,7 @@ export GCP_PROJECT="ac215-398714"
 export GCS_BUCKET_NAME="fakenew_classifier_data_bucket"
 export GCS_SERVICE_ACCOUNT="id-15-project@ac215-398714.iam.gserviceaccount.com"
 export GCP_REGION="us-central1"
-# export GCS_PACKAGE_URI="gs://mushroom-app-trainer-code"
+# export GCS_PACKAGE_URI="gs://fakenew_classifier-trainer-code"
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .

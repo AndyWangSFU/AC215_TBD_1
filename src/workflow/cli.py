@@ -12,22 +12,22 @@ import string
 from kfp import dsl
 from kfp import compiler
 import google.cloud.aiplatform as aip
+from google_cloud_pipeline_components.v1.custom_job import create_custom_training_job_from_component
 
 # from model import model_training, model_deploy
 
 GCP_PROJECT = os.environ["GCP_PROJECT"]
 GCS_BUCKET_NAME = os.environ["GCS_BUCKET_NAME"]
-#GCS_BUCKET_NAME = "gcf-v2-sources-80474551046-us-central1"
 
 BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
-GCS_PACKAGE_URI = os.environ["GCS_PACKAGE_URI"]
-# GCP_REGION = os.environ["GCP_REGION"]
-GCP_REGION = "us-central1"
+#GCS_PACKAGE_URI = os.environ["GCS_PACKAGE_URI"]
+GCP_REGION = os.environ["GCP_REGION"]
 
 DATA_PREPROCESS_IMAGE = "kirinlfc/fakenews-detector-data-preprocessor"
 MODEL_COMPRESSION_IMAGE = "ksiyang/multimodal_fakenews_detector_model_compression"
+MODEL_TRAIN_IMAGE = "ksiyang/model_training"
 
 def generate_uuid(length: int = 8) -> str:
     return "".join(random.choices(string.ascii_lowercase + string.digits, k=length))
@@ -88,6 +88,12 @@ def main(args=None):
             )
             return container_spec
 
+        # # Convert the above component into a custom training job
+        # compress_job = create_custom_training_job_from_component(
+        #     compress,
+        #     machine_type = 'e2-standard-8',
+        # )
+
         # Define a Pipeline
         @dsl.pipeline
         def compress_pipeline():
@@ -102,7 +108,7 @@ def main(args=None):
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "fakenew-detector-data-download-" + job_id
+        DISPLAY_NAME = "fakenew-detector-model-compression-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
             template_path="compress.yaml",
@@ -111,68 +117,44 @@ def main(args=None):
         )
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
-        
 
-    if args.model_training:
-        print("Model Training")
+    if args.train:
+        # Define a Container Component
+        @dsl.container_component
+        def train():
+            container_spec = dsl.ContainerSpec(
+                image=MODEL_TRAIN_IMAGE,
+                command=[],
+                args=[
+                    "multimodal_binary_training.py",
+                    "--hidden_layer_size 224   --learn_rate 0.001   --epochs 20   --batch_size 16   --metadata_path new_data/new_metadata   --images_path new_data/new_images   --new_data_size 41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470",
+                ],
+            )
+            return container_spec
 
         # Define a Pipeline
         @dsl.pipeline
-        def model_training_pipeline():
-            model_training(
-                project=GCP_PROJECT,
-                location=GCP_REGION,
-                staging_bucket=GCS_PACKAGE_URI,
-                bucket_name=GCS_BUCKET_NAME,
-            )
+        def train_pipeline():
+            train()
 
         # Build yaml file for pipeline
         compiler.Compiler().compile(
-            model_training_pipeline, package_path="model_training.yaml"
+            train_pipeline, package_path="train.yaml"
         )
 
         # Submit job to Vertex AI
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "fakenew-detector-data-download-" + job_id
+        DISPLAY_NAME = "fakenew-detector-model-training-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
-            template_path="model_training.yaml",
+            template_path="train.yaml",
             pipeline_root=PIPELINE_ROOT,
             enable_caching=False,
         )
 
-        job.run(service_account=GCS_SERVICE_ACCOUNT)
-
-    # if args.model_deploy:
-    #     print("Model Deploy")
-
-    #     # Define a Pipeline
-    #     @dsl.pipeline
-    #     def model_deploy_pipeline():
-    #         model_deploy(
-    #             bucket_name=GCS_BUCKET_NAME,
-    #         )
-
-    #     # Build yaml file for pipeline
-    #     compiler.Compiler().compile(
-    #         model_deploy_pipeline, package_path="model_deploy.yaml"
-    #     )
-
-    #     # Submit job to Vertex AI
-    #     aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
-
-    #     job_id = generate_uuid()
-    #     DISPLAY_NAME = "mushroom-app-model-deploy-" + job_id
-    #     job = aip.PipelineJob(
-    #         display_name=DISPLAY_NAME,
-    #         template_path="model_deploy.yaml",
-    #         pipeline_root=PIPELINE_ROOT,
-    #         enable_caching=False,
-    #     )
-
-    #     job.run(service_account=GCS_SERVICE_ACCOUNT)
+        job.run(service_account=GCS_SERVICE_ACCOUNT)    
 
     if args.pipeline:
         # Define a Container Component
@@ -188,7 +170,7 @@ def main(args=None):
                 ],
             )
             return container_spec
-        
+
         @dsl.container_component
         def process():
             container_spec = dsl.ContainerSpec(
@@ -200,53 +182,44 @@ def main(args=None):
                 ],
             )
             return container_spec
-
-        # # Define a Container Component for data processor
-        # @dsl.container_component
-        # def data_processor():
-        #     container_spec = dsl.ContainerSpec(
-        #         image=DATA_PROCESSOR_IMAGE,
-        #         command=[],
-        #         args=[
-        #             "cli.py",
-        #             "--clean",
-        #             "--prepare",
-        #             f"--bucket {GCS_BUCKET_NAME}",
-        #         ],
-        #     )
-        #     return container_spec
-
+        
+        # Define a Container Component
+        @dsl.container_component
+        def train():
+            container_spec = dsl.ContainerSpec(
+                image=MODEL_TRAIN_IMAGE,
+                command=[],
+                args=[
+                    "multimodal_binary_training.py",
+                    "--hidden_layer_size 224   --learn_rate 0.001   --epochs 20   --batch_size 16   --metadata_path new_data/new_metadata   --images_path new_data/new_images   --new_data_size 41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470",
+                    ],
+            )
+            return container_spec     
+           
+        # Define a Container Component
+        @dsl.container_component
+        def compress():
+            container_spec = dsl.ContainerSpec(
+                image=MODEL_COMPRESSION_IMAGE,
+                command=[],
+                args=[
+                    "downsize_model.py",
+                    "--raw_model_path models/raw_models  --quantization_type float16  --hidden_layer_size 224  --learn_rate 0.001  --epochs 20  --batch_size 16  --metadata_path new_data/new_metadata  --images_path new_data/new_images   --new_data_size 41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470"
+                ],
+            )
+            return container_spec
+        
         # Define a Pipeline
         @dsl.pipeline
         def ml_pipeline():
             # download
-            download_task = download().set_display_name("download")
+            download_task = download().set_display_name("data download")
             # process
-            process_task = process().set_display_name("process").after(download_task)
-            
-            # Model Training
-            model_training_task = (
-                model_training(
-                    project=GCP_PROJECT,
-                    location=GCP_REGION,
-                    staging_bucket=GCS_PACKAGE_URI,
-                    bucket_name=GCS_BUCKET_NAME,
-                    epochs=15,
-                    batch_size=16,
-                    # model_name="mobilenetv2",
-                    train_base=False,
-                )
-                .set_display_name("Model Training")
-                .after(data_processor_task)
-            )
-            # # Model Deployment
-            # model_deploy_task = (
-            #     model_deploy(
-            #         bucket_name=GCS_BUCKET_NAME,
-            #     )
-            #     .set_display_name("Model Deploy")
-            #     .after(model_training_task)
-            # )
+            process_task = process().set_display_name("data process").after(download_task)
+            # model training
+            train_task = train().set_display_name("model training").after(process_task)
+            # model compress
+            compression_task = compress().set_display_name("model compression").after(train_task)         
 
         # Build yaml file for pipeline
         compiler.Compiler().compile(ml_pipeline, package_path="pipeline.yaml")
@@ -329,29 +302,17 @@ if __name__ == "__main__":
         help="Run just the data processor",
     )
     parser.add_argument(
+        "-t",
+        "--train",
+        action="store_true",
+        help="Train the models",
+    )
+    parser.add_argument(
         "-c",
         "--compress",
         action="store_true",
-        help="Run just the model compressor",
+        help="Run the model compressor",
     )
-    # parser.add_argument(
-    #     "-p",
-    #     "--data_processor",
-    #     action="store_true",
-    #     help="Run just the Data Processor",
-    # )
-    parser.add_argument(
-        "-t",
-        "--model_training",
-        action="store_true",
-        help="Run just Model Training",
-    )
-    # parser.add_argument(
-    #     "-d",
-    #     "--model_deploy",
-    #     action="store_true",
-    #     help="Run just Model Deployment",
-    # )
     parser.add_argument(
         "-w",
         "--pipeline",

@@ -1,0 +1,29 @@
+# PIPELINE DEFINITION
+# Name: train-pipeline
+components:
+  comp-train:
+    executorLabel: exec-train
+deploymentSpec:
+  executors:
+    exec-train:
+      container:
+        args:
+        - multimodal_binary_training.py
+        - --hidden_layer_size 224   --learn_rate 0.001   --epochs 20   --batch_size
+          16   --metadata_path new_data/new_metadata   --images_path new_data/new_images   --new_data_size
+          41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470
+        image: ksiyang/model_training
+pipelineInfo:
+  name: train-pipeline
+root:
+  dag:
+    tasks:
+      train:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-train
+        taskInfo:
+          name: train
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0
