@@ -85,13 +85,13 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 ### Milestone4
 
-<ins>**Objectives for Milestone3**</ins>
+<ins>**Objectives for Milestone4**</ins>
 
 We address each of the objectives for Milestone 4 in the following ways:
 
 *1. Distillation/Quantization/Compression*
 
-[add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
+
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
@@ -99,7 +99,6 @@ Figure 2:
 
 
 *2. Vertex AI Pipelines (Kubeflow) and Cloud Functions Integration*
-
 
 
 
@@ -122,7 +121,7 @@ Figure 2:
 
 
 
-** README from milestone3 (remove later)**
+**README from milestone3 (remove later)**
 
 
 
