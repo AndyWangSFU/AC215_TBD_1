@@ -76,11 +76,11 @@ TBD_1
 **Project**
 In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. The rationale is that when a user chooses to use our API and, for instance, check news they found online, they might not have an image but will most likely have text. 
 
-<p align="center">
+<!-- <p align="center">
   <img width="460" height="300" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/53b18850-f0d1-47a4-8f78-71724c18faff">
 </p>
 
-<p style="text-align: center;">Figure 1: Project data pipeline</p>
+<p style="text-align: center;">Figure 1: Project data pipeline</p> -->
 
 ****
 
@@ -91,6 +91,8 @@ In this project we aim to build and deploy a model that can detecting fake conte
 We address each of the objectives for Milestone 4 in the following ways:
 
 *1. Distillation/Quantization/Compression*
+
+To enable enable our deployment in a resource-constrained environment, we utilize a compression technique that (kyle continues)
 
 
 
@@ -115,7 +117,7 @@ Below, we can see our Weights & Biases page while training our compression model
 **Workflow Container**
 
 
-The workflow container follows a similar structure as the class demo. (Reference: https://github.com/dlops-io/ml-workflow#mushroom-app-ml-workflow-management). To activate the docker environment, run `sh docker-shell.sh`, and it will activate the environment with all necessary environment variables (GCP project name, service account, data bucket, and region). The GCP authentication steps are done in `docker-entrypoint.sh`. 
+The workflow container follows a similar structure as the class demo. (Reference: https://github.com/dlops-io/ml-workflow#mushroom-app-ml-workflow-management). To activate the docker environment, run `sh docker-shell.sh`, and it will activate the environment with all necessary environment variables (GCP project name, service account, data bucket, and region). The GCP authentication steps are done in `docker-entrypoint.sh`. Together, this workflow container ships our code off to Vertex AI Pipelines and run each tasks in sequence.
 
 After the docker is running, we can call `python cli.py` to call the pipeline. There are 3 containers callable from `cli.py --- preprocessing` (to download and process the images), `models` (to train the models), and `model_compression` (to do model compression). These individual containers can be called as a single-element pipeline using `-d (download), -p(process), -t (model training), and -c (model compression)`. However, this is mainly for testing purposes. In real usage, use `python cli.py – w` to run the whole pipeline. The resulting pipeline can be visualized below on Vertex AI. 
 
@@ -126,9 +128,10 @@ After the docker is running, we can call `python cli.py` to call the pipeline. T
 
 
 Behind the scene, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
-DATA_PREPROCESS_IMAGE = "kirinlfc/fakenews-detector-data-preprocessor"
-MODEL_COMPRESSION_IMAGE = "ksiyang/multimodal_fakenews_detector_model_compression"
-MODEL_TRAIN_IMAGE = "ksiyang/model_training"
+
+- DATA_PREPROCESS_IMAGE = "kirinlfc/fakenews-detector-data-preprocessor"
+- MODEL_COMPRESSION_IMAGE = "ksiyang/multimodal_fakenews_detector_model_compression"
+- MODEL_TRAIN_IMAGE = "ksiyang/model_training"
 
 In case anyone wants to test the connection with Vertex AI, call python cli.py – s1. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
 
