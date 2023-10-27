@@ -33,23 +33,23 @@ Project Organization
             │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
             │   └── run_docker.sh
-            ├── training
-            │   │── package
+            ├── training      <- model training and evaluation
+            │   │── package (not finally used)
             │   │       ├── trainer
             │   │       │     └── multimodal_binary_training.py
             │   │       ├── PKG-INFO.txt
             │   │       ├── setup.cfg
             │   │       └── setup.py
             │   ├── Dockerfile
-            │   ├── cli.py
-            │   ├── cli.sh
+            │   ├── cli.py (not finally used)
+            │   ├── cli.sh (not finally used)
             │   ├── multimodal_binary_training.py
-            │   ├── docker-entrypoint.sh
-            │   ├── docker-shell.sh
+            │   ├── docker-entrypoint.sh (not finally used)
+            │   ├── docker-shell.sh (not finally used)
             │   ├── requirements.txt
             │   ├── train_cli_example_input.json
             │   └── run_docker.sh
-            └── workflow
+            └── workflow      <- scripts for automating data download, preprocess, model training, and compression
                 ├── Dockerfile
                 ├── Pipfile
                 ├── Pipfile.lock
@@ -65,7 +65,7 @@ Project Organization
 
 
 --------
-# AC215 - Milestone3 - “Multimodal Fake News Detector”
+# AC215 - Milestone4 - “Multimodal Fake News Detector”
 
 **Team Members**
 Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
@@ -83,7 +83,7 @@ In this project we aim to build and deploy a model that can detecting fake conte
 <p style="text-align: center;">Figure 1: Project data pipeline</p>
 
 
-### Milestone3
+### Milestone4
 
 <ins>**Objectives for Milestone3**</ins>
 
