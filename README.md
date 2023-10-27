@@ -21,32 +21,47 @@ Project Organization
             │   ├── data_loader.py
             │   ├── process.py
             │   ├── requirements.txt
+            │   ├── docker-entrypoint.sh
+            │   ├── docker-shell.sh
             │   ├── Pipfile
             │   └── Pipfile.lock
-            ├── data_versioning
+            ├── model_compression
             │   ├── Dockerfile
-            │   ├── cli.py
-            │   ├── docker-shell.sh
-            │   ├── .dvcignore
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── .dvc
-            │   └── dvc_cli.sh
-            ├── models
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
+            │   ├── docker-entrypoint.sh
+            │   ├── downsize_model.py
+            │   ├── model_helpers.py
             │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
-            │   ├── run_docker.sh
-            │   ├── train.py
-            │   └── train_cli_example_input.json
-            ├── tfrecords
+            │   └── run_docker.sh
+            ├── training
+            │   │── package
+            │   │       ├── trainer
+            │   │       │     └── multimodal_binary_training.py
+            │   │       ├── PKG-INFO.txt
+            │   │       ├── setup.cfg
+            │   │       └── setup.py
             │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
+            │   ├── cli.py
+            │   ├── cli.sh
+            │   ├── multimodal_binary_training.py
+            │   ├── docker-entrypoint.sh
+            │   ├── docker-shell.sh
             │   ├── requirements.txt
-            │   └── tfrecords.py      
+            │   ├── train_cli_example_input.json
+            │   └── run_docker.sh
+            └── workflow
+                ├── Dockerfile
+                ├── Pipfile
+                ├── Pipfile.lock
+                ├── cli.py
+                ├── compress.yaml
+                ├── docker-entrypoint.sh
+                ├── docker-shell.sh
+                ├── download.yaml
+                ├── model.py
+                ├── pipeline.yaml
+                ├── sample-pipeline1.yaml
+                └── train.yaml    
 
 
 --------
