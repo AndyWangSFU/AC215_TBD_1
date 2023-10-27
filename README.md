@@ -1,20 +1,20 @@
-Milestone3
+Milestone4
 ==============================
 
-AC215 - Milestone3
+AC215 - Milestone4
 
 Project Organization
 ------------
       ├── LICENSE
       ├── README.md
       ├── notebooks
-      ├── references
+      ├── references          <- a list of papers related to our project
       ├── requirements.txt
       ├── .gitignore
       ├── .gitattributes
-      ├── .dvcignore
-      ├── .dvc
       ├── reports
+      ├── presentations        
+      │     └── midterm.pdf     <- our midterm presentation slides
       └── src
             ├── preprocessing
             │   ├── Dockerfile
