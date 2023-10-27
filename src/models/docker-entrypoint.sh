@@ -1,12 +1,10 @@
 #!/bin/bash
 
-echo "Container is running!!!"
+echo "Container is running!"
 
-# Authenticate gcloud using service account
-gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
-# Set GCP Project Details
-gcloud config set project $GCP_PROJECT
+args="$@"
+echo $args
 
 
-#/bin/bash
-pipenv shell
+
+python $args > /dev/null

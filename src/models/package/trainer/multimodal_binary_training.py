@@ -7,7 +7,6 @@ import tensorflow_text as text
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from wandb.keras import WandbMetricsLogger, WandbModelCheckpoint, WandbCallback
 from tensorflow.keras.optimizers import Adam
-from google.cloud import storage
 from tensorflow import keras
 import wandb
 import pickle
@@ -16,53 +15,21 @@ import argparse
 import json
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Process JSON configuration file')
+    parser.add_argument('config_file', type=str, help='Path to JSON configuration file')
+    args = parser.parse_args()
+    return args.config_file
+
+def read_json_config(config_file):
+    with open(config_file, 'r') as file:
+        config_data = json.load(file)
+    return config_data
+
 
 # Define BERT preprocessing model
 bert_model_path = "https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-2_H-256_A-4/1"
 bert_preprocess_path = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
-GCP_PROJECT = "AC215"
-BUCKET_NAME = "fakenew_classifier_data_bucket"
-
-
-def download(filepath, max_num):
-    # Initiate Storage client
-    storage_client = storage.Client(project=GCP_PROJECT)
-
-    # Get reference to bucket
-    bucket = storage_client.bucket(BUCKET_NAME)
-    
-    # create a local folder for the downloaded file if not exist
-    os.makedirs(filepath, exist_ok=True)
-
-    # Find all content in a bucket
-    blobs = bucket.list_blobs(prefix=filepath)
-    for blob in blobs:
-        if max_num == 0:
-            break
-        if not blob.name.endswith("/"):
-            try:
-            # Download the blob to a local file with the same name
-                blob.download_to_filename(blob.name)
-                print(f"Downloaded: {blob.name}")
-            except Exception as e:
-                print(f"Error downloading {blob.name}: {str(e)}")
-            max_num -= 1
-
-
-def upload(model_path, destination_blob_name):
-    # Initiate Storage client
-    storage_client = storage.Client(project=GCP_PROJECT)
-
-    # Get reference to bucket
-    bucket = storage_client.bucket(BUCKET_NAME)
-
-    # Destination path in GCS
-    print(f"Uploading to {destination_blob_name}")
-
-    # Upload the model file directly to GCS
-    model_blob = bucket.blob(destination_blob_name)
-    model_blob.upload_from_filename(model_path)
-    print(f"Uploaded: {destination_blob_name}")
 
 def make_bert_preprocessing_model(sentence_feature, seq_length=128):
     """Returns Model mapping string features to BERT inputs."""
@@ -245,121 +212,99 @@ def create_multimodal_model(num_projection_layers=1, projection_dims=224, dropou
     return model
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
         
     """Get the config data from the JSON file"""
-    parser = argparse.ArgumentParser(description="Model training")
+    config_file_path = parse_arguments()
+    config_data = read_json_config(config_file_path)
 
-    # Define command-line arguments
-    parser.add_argument("--hidden_layer_size", type=int, default=224, help="Hidden layer size")
-    parser.add_argument("--learn_rate", type=float, default=0.001, help="Learning rate")
-    parser.add_argument("--epochs", type=int, default=20, help="Number of epochs")
-    parser.add_argument("--batch_size", type=int, default=16, help="Batch size")
-    parser.add_argument("--metadata_path", type=str, default="new_data/new_metadata", help="Path to metadata")
-    parser.add_argument("--images_path", type=str, default="new_data/new_images", help="Path to images")
-    parser.add_argument("--new_data_size", type=int, default=41, help="New data size")
-    parser.add_argument("-w", "--wandb", type=str, default="", help="WANDB Key")
-    # Parse the command-line arguments
-    args = parser.parse_args()
+    batch_size = config_data.get('batch_size', None)
+    layer_sizes = config_data.get('layer_size', None)
+    learning_rate = config_data.get('learning_rate', None)
+    num_gpus = config_data.get('num_gpus', None)
+    max_epochs = config_data.get('max_epochs', None)
+    train_path = config_data.get('train_path', None)
+    val_path = config_data.get('val_path', None)
+    input_mode = config_data.get("input_mode",None)
 
-    
-    # Create the config dictionary
-    config = {
-        "hidden_layer_size": args.hidden_layer_size,
-        "learning_rate": args.learn_rate,
-        "epochs": args.epochs,
-        "batch_size": args.batch_size,
-        "metadata_path": args.metadata_path,
-        "images_path": args.images_path,
-        "new_data_size": args.new_data_size,
-    }
-    """ Load metadata which has labels, cleaned_titles, and image IDs """
-    
-    
-    wandb.login(key=args.wandb)
+    if input_mode == "tf_data":
+        """ Load metadata which has labels, cleaned_titles, and image IDs """
+        
+        train_df = pd.read_csv(train_path, sep="\t")
+        val_df = pd.read_csv(val_path, sep="\t")
     
 
-    download(config['metadata_path'], 2)
-    download(config['images_path'], config['new_data_size'])
- 
-    # load in the validation data
-    val_df = pd.read_csv(f"{config['metadata_path']}/new_val_metadata", sep="\t")
-    train_df = pd.read_csv(f"{config['metadata_path']}/new_train_metadata", sep="\t")
-    batch_size = config["batch_size"]
-    """Turn metadata into tf.data.Dataset objects"""
-    val_ds = prepare_dataset(val_df,batch_size=config["batch_size"], training=False)
-    train_ds = prepare_dataset(train_df,batch_size=config["batch_size"], training=True)
+        """Turn metadata into tf.data.Dataset objects"""
+        train_ds = prepare_dataset(train_df)
+        val_ds = prepare_dataset(val_df, training=False)
 
     # Automatically use all avaliable GPUs
     strategy = tf.distribute.MirroredStrategy()
     print("Number of devices: {}".format(strategy.num_replicas_in_sync))
 
 
+    for layer_size in layer_sizes:
+        with strategy.scope():
+            multimodal_model = create_multimodal_model(num_projection_layers=1, projection_dims=layer_size, dropout_rate=0, 
+                            vision_trainable=False, text_trainable=False, attention=False,layer_size = layer_size)
 
-    with strategy.scope():
-        multimodal_model = create_multimodal_model(num_projection_layers=1, projection_dims=config["hidden_layer_size"], dropout_rate=0, 
-                        vision_trainable=False, text_trainable=False, attention=False,layer_size = config["hidden_layer_size"])
+            losses = {"clf_output": 'binary_crossentropy'}
+            multimodal_model.compile(
+                optimizer=Adam(learning_rate=learning_rate),
+                loss=losses,
+                metrics='accuracy'
+            )
 
-        losses = {"clf_output": 'binary_crossentropy'}
-        multimodal_model.compile(
-            optimizer=Adam(learning_rate=config["learning_rate"]),
-            loss=losses,
-            metrics='accuracy'
+        wandb.init(
+            project = ' ',
+            config = {
+            "learning_rate": learning_rate,
+            "epochs": max_epochs,
+            "batch_size": batch_size,
+            "model_name": 'Binary_Classifier (BERT + RESNET-50) Layer Size {}'.format(layer_size),
+            "layer_size":layer_size ,
+            "metrics": "accuracy",
+            },
         )
 
-    wandb.init(
-        project = ' ',
-        config = {
-        "learning_rate": config["learning_rate"],
-        "epochs": config["epochs"],
-        "batch_size": batch_size,
-        "model_name": 'Binary_Classifier (BERT + RESNET-50) Layer Size {}'.format(config["hidden_layer_size"]),
-        "layer_size":config['hidden_layer_size'] ,
-        "metrics": "accuracy",
-        },
-    )
-
-    # Specify the loss function for the main output (outputs).
+        # Specify the loss function for the main output (outputs).
 
 
 
-    # Define callbacks
-    checkpoint_callback = ModelCheckpoint(
-        filepath="binary_clf_{}.h5".format(config["hidden_layer_size"]),
-        save_best_only=True,
-        save_weights_only=False,
-        monitor='val_clf_output_accuracy',
-        mode='max',
-        verbose=1,
-        save_freq='epoch')
+        # Define callbacks
+        checkpoint_callback = ModelCheckpoint(
+            filepath="binary_clf_{}.h5".format(layer_size),
+            save_best_only=True,
+            save_weights_only=False,
+            monitor='val_clf_output_accuracy',
+            mode='max',
+            verbose=1,
+            save_freq='epoch')
 
-    early_stopping_callback = EarlyStopping(
-        monitor='val_clf_output_accuracy',
-        mode='max',
-        patience=2,
-        verbose=1,
-        restore_best_weights=True
-    )
+        early_stopping_callback = EarlyStopping(
+            monitor='val_clf_output_accuracy',
+            mode='max',
+            patience=2,
+            verbose=1,
+            restore_best_weights=True
+        )
 
-    start_time = time.time()
-    # Train the model with the custom learning rate
-    history = multimodal_model.fit(
-        train_ds,
-        epochs=config["epochs"],
-        validation_data=val_ds,
-        callbacks=[checkpoint_callback, early_stopping_callback,WandbCallback()])
-    
-    # save the model
-    model_name = "binary_clf_{}.h5".format(config["hidden_layer_size"])
-    multimodal_model.save(model_name)
-    # upload the model to GCS
-    upload(model_name, "models/raw")
+        start_time = time.time()
+        # Train the model with the custom learning rate
+        history = multimodal_model.fit(
+            train_ds,
+            epochs=max_epochs,
+            validation_data=val_ds,
+            callbacks=[checkpoint_callback, early_stopping_callback,WandbCallback()])
+
+        execution_time = (time.time() - start_time)/60.0
+        print("Training execution time (mins)",execution_time)
+
+        # Update W&B
+        wandb.config.update({"execution_time": execution_time})
+        # Close the W&B run
+        wandb.run.finish()
 
 
-    execution_time = (time.time() - start_time)/60.0
-    print("Training execution time (mins)",execution_time)
 
-    # Update W&B
-    wandb.config.update({"execution_time": execution_time})
-    # Close the W&B run
-    wandb.run.finish()
+
