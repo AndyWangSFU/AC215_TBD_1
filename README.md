@@ -74,7 +74,7 @@ Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
 TBD_1
 
 **Project**
-In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. 
+In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. The rationale is that when a user chooses to use our API and, for instance, check news they found online, they might not have an image but will most likely have text. 
 
 <p align="center">
   <img width="460" height="300" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/53b18850-f0d1-47a4-8f78-71724c18faff">
@@ -87,31 +87,44 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 <ins>**Objectives for Milestone3**</ins>
 
-We address each of the objectives for Milestone 3 in the following ways:
+We address each of the objectives for Milestone 4 in the following ways:
 
-*1. Integrate Distributed Computing and Cloud Storage*
+*1. Distillation/Quantization/Compression*
 
 [add info on distributed computing]. We have used Google Cloud Platform (GCP) to store our training and test images/text as it supports the vast scale of these datasets.
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3">
 
-Figure 2: Google Cloud Platform being used to store different versions of training and test data
+Figure 2:   
 
 
-*2. Utilize TensorFlow for Data Management*
+*2. Vertex AI Pipelines (Kubeflow) and Cloud Functions Integration*
 
-We built a TFRecords container and have generated some TFRecords files which we have tested for use in training our model. We also tested TFData for model training. We found that TFRecords did not streamline our pipeline significantly compared to TFData and was fairly slow to generate when implemented. Therefore, for now, we are performing model training with pre-fetched TFData files and it works well. We are keeping the TFRecords container in our repo because if we subsequently find TFRecords indeed provides large performance boosts, we aim to leverage TFRecords in Milestone 4.
 
-*3. Develop Advanced Training Workflows*
 
-We train our model using both text and image data. We implement experiment tracking using Weights & Biases. Tracking was performed using the `wandb` library we included inside of our `train.py` script. We were able to train our model in several hours using a GCP virtual machine. We therefore did not feel the need to use serverless training. We performed model training using a single machine, single GPU strategy, although the code enables Single Machine, Multiple GPU if multiple GPUs avaliable (we could not get a quota for more than 1 GPU for any region).
 
-<img width="1271" alt="Screenshot 2023-10-04 at 7 22 14 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f204bf95-e939-4cd5-91dc-768b726bd692">
-
-Figure 3: screenshot of our Weights & Biases dashboard with model training charts
 
 
 <ins>**Code Structure**</ins>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+** README from milestone3 (remove later)**
+
+
 
 *Data Pre-Processing Container*
 
@@ -152,7 +165,7 @@ Figure 3: screenshot of our Weights & Biases dashboard with model training chart
 (5) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
 
 To run Dockerfile - 
-make sure ac215-tbd-1.json is downloaded into src/preprocessing/secrets/ to enable GCP authentication
+make sure **ac215-tbd-1.json** is downloaded into src/preprocessing/secrets/ to enable GCP authentication
 ```
 cd src/preprocessing/
 docker build -t tbd1-preprocess -f Dockerfile .
