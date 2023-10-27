@@ -82,6 +82,7 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 <p style="text-align: center;">Figure 1: Project data pipeline</p>
 
+****
 
 ### Milestone4
 
@@ -105,7 +106,6 @@ We address each of the objectives for Milestone 4 in the following ways:
 
 
 
-****
 Below, we can see our Weights & Biases page while training our compression model:
 
 
