@@ -165,8 +165,11 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py â
 - This container can build the whole sequence pipeline in Vertex AI to achieve serverless training.
 
 (1) `src/workflow/cli.py` - this script creates the pipeline and execute different parameter arguemnts
+
 (2) `src/workflow/Pipfile` - this file contains the Python packages, sources, and requirments to run whe workflow
+
 (3) `src/workflow/compress.yaml` - this file defines the pipeline structure
+
 (4) `src/workflow/Dockerfile` - the file sets the docker environment
 
 
