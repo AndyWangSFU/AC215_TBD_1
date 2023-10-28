@@ -101,6 +101,8 @@ The W&B screenshot below displays the model_size, quantization_method, and out-o
 
 ![WhatsApp Image 2023-10-27 at 8 19 28 PM](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/ca3ff2d6-549f-4082-9ff8-df07cffd4584)
 
+*Figure 1: Quantization Method Comparison (inference only)*
+
 
 <!-- <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3"> -->
 
@@ -116,12 +118,13 @@ The workflow container follows a similar structure as the class demo. (Reference
 
 After the docker is running, we can call `python cli.py` to call the pipeline. There are 3 containers callable from `cli.py --- preprocessing` (to download and process the images), `models` (to train the models), and `model_compression` (to do model compression). These individual containers can be called as a single-element pipeline using `-d (download), -p(process), -t (model training), and -c (model compression)`. However, this is mainly for testing purposes. In real usage, use `python cli.py – w` to run the whole pipeline. The resulting pipeline can be visualized below on Vertex AI. 
 
-![Picture1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/629ddff3-9a8d-47f3-a4a9-f8c17aa3a678)
-
 <img width="1204" alt="Screenshot 2023-10-27 at 7 52 46 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/7edcd404-a8ff-4ff7-9e76-0aab3a4b6359">
 
+![Picture1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/629ddff3-9a8d-47f3-a4a9-f8c17aa3a678)
 
-*Figure 1: Pipeline run analysis*
+
+*Figure 2: Pipeline run analysis*
+
 
 
 Behind the scenes, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
