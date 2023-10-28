@@ -132,7 +132,7 @@ After the docker is running, we can call `python cli.py` to call the pipeline. T
 *Figure 1: Pipeline run analysis*
 
 
-Behind the scene, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
+Behind the scenes, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
 
 - `DATA_PREPROCESS_IMAGE` = "kirinlfc/fakenews-detector-data-preprocessor"
 - `MODEL_COMPRESSION_IMAGE` = "ksiyang/multimodal_fakenews_detector_model_compression"
@@ -172,6 +172,7 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py �
 
 (4) `src/workflow/Dockerfile` - the file sets the docker environment
 
+<img width="1204" alt="Screenshot 2023-10-27 at 7 52 46 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/7edcd404-a8ff-4ff7-9e76-0aab3a4b6359">
 
 
 ```
