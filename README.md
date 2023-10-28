@@ -103,15 +103,20 @@ To enable enable our deployment in a resource-constrained environment, we utiliz
 
 *2. Vertex AI Pipelines (Kubeflow) and Cloud Functions Integration*
 
+**Preprocess Container**
+Please refer to Milestone3 regarding the rationale and code structure of the preprocessing container.
+
 
 **Model Compression Container**
-
 
 
 Below, we can see our Weights & Biases page while training our compression model:
 
 
 **Model Training Container**
+
+
+
 
 
 **Workflow Container**
@@ -124,14 +129,14 @@ After the docker is running, we can call `python cli.py` to call the pipeline. T
 ![Picture1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/629ddff3-9a8d-47f3-a4a9-f8c17aa3a678)
 
 
-*Figure: Pipeline run analysis*
+*Figure 1: Pipeline run analysis*
 
 
 Behind the scene, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
 
-- DATA_PREPROCESS_IMAGE = "kirinlfc/fakenews-detector-data-preprocessor"
-- MODEL_COMPRESSION_IMAGE = "ksiyang/multimodal_fakenews_detector_model_compression"
-- MODEL_TRAIN_IMAGE = "ksiyang/model_training"
+- `DATA_PREPROCESS_IMAGE` = "kirinlfc/fakenews-detector-data-preprocessor"
+- `MODEL_COMPRESSION_IMAGE` = "ksiyang/multimodal_fakenews_detector_model_compression"
+- `MODEL_TRAIN_IMAGE` = "ksiyang/model_training"
 
 In case anyone wants to test the connection with Vertex AI, call python cli.py – s1. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
 
@@ -141,126 +146,38 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py �
 
 
 
+*Model Compression Container*
+
+- This container incorporates the model compression technique. 
+
+(1) `src/data_versioninig/dvc_cli.sh` 
 
 
-
-
-
-
-
-
-
-
-
-
-
-**README from milestone3 (remove later)**
-
-
-
-*Data Pre-Processing Container*
-
-- This container downloads data from the Google Cloud Bucket, processes the image metadata, processes/augments the images themselves, and stores the data back to GCP.
-
-(1) `src/preprocessing/data_loader.py`  - This script downloads and uploads data to and from GCP. There are two key functions:
-
-- a)	"download"
--       Function: Download file from “file_path”
--       Usage: python data_loader.py -d -f “file_path”
--       Optional: -m number (max number of images to download)
-
-- b)	"upload"
--       Function: Upload files in local “file_path” in the form of zipped files
--       Usage: python data_loader.py -u -f “file_path”
--       Optional: -b number (number of images in a zipfile to upload)
-
-(2) `src/preprocessing/process.py`  - This script performs the preprocessing steps on the metadata and images. There are three key functions:
-
-- a)	"update_metadata"
--       Function: Process a metadata file. Drop NA values in label. Look for potential corrupted and non-existing images. If found, drop the corresponding row from the metadata. Save the cleaned metadata in.a folder called “cleaned metadata”.
--       Usage: python process.py -c --inpath “path_to_metadata” -f “path_to_images” –outname “name_of_new_metadata”
-
-- b)	"process"
--       Function: Process the images inside a folder. Read them if possible and resize it. Optionally, users can choose to augment the images. The processed imaged are stored in a folder called “public_image_set” + args.pro_suf.
--       Usage: python data_loader.py -p -f “path_to_images” -s image_dimension
--       Optional: -a (to do augmentation). -- pro_suf “suffix_to_name_the_folder”
-
-- c)	"augment"
--       Function: Augment the images while processing. When an image is processed, it can also be augmented to create several augmented images. The number of augmented images per image processed can be declared by args.augment_num or -n number. The processed imaged are stored in a folder called “public_image_set” + args.aug_suf.
--       Usage: python data_loader.py -p -f “path_to_images” -s image_dimension -a
--       Optional: -- aug_suf “suffix_to_name_the_folder”. -n number.
-
-(3) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `Numpy`, `opencv-python-headless`, `Pillow`, `albumentations`, `google-cloud-storage`, `pandas`  
-
-(4) `src/preprocessing/Pipefile` and `src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
-
-(5) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.9-slim-bookworm`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
-
-To run Dockerfile - 
-make sure **ac215-tbd-1.json** is downloaded into src/preprocessing/secrets/ to enable GCP authentication
-```
-cd src/preprocessing/
-docker build -t tbd1-preprocess -f Dockerfile .
-docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
-
-# if running the container for the first time, you might need to run:
-pipenv install -r requirements.txt
-```
-
-*Data Versioning Container*
-
-- This container sets up data versioning for data in this project.
-
-(1) `src/data_versioninig/dvc_cli.sh` - This script mounts the GCP bucket, asks the user whether they want to use data versioning, and initializes DVC based on input.
-  
-(2) `src/data_versioning/cli.py`  -This script downloads data from the bucket
-
-(3) `src/data_versioning/Pipefile` and `src/data_versioning/Pipefile.lock` are used to manage project dependencies and their versions as in the other containers.
-
-(4) `src/data_versioning/Dockerfile` Dockerfile to build the container for data versioning
-
-(5) `src/data_versioning/docker-shell.sh` Run this shell script to build and run the container
-
-To run Dockerfile - 
-make sure ac215-tbd-1.json is downloaded into src//secrets/ to enable GCP authentication
-```
-cd src/data_versioning/
-sh docker-shell.sh
-
-# initialize dvc tracking
-sh dvc_cli.sh
-dvc add data_file/folder
-dvc push
-```
-
-*TFRecords Container*
-
-- This container converts input data into TFRecords files.
-
-(1) `src/tfrecords/tfrecords.py` - This script is an exerpt from model training script with incorporation of TFRecords instead of TFData.
-
- 
 *Model Training Container*
 
-- This container contains all our training scripts and modeling components. 
-- It currently takes in a `.json` file that has the path to the cleaned metadata, image directory, and several model architectural and training hyperparameters.
-- The `multimodal_binary_training.py` script will perform several model training runs given different `layer_sizes` in `.json` file and create multiple W&B runs. The model information and performance metrics are all stored in W&B
-- The resulting model checkpoints of each training runs are stored as artifacts in W&B and can be easily reloaded to perform inference. 
+- This container 
 
-(1) `src/models/multimodal_binary_training.py` - This script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with different layer sizes (as seperate W&B runs). Model artifacts and metrics are all stored in respective W&B runs. Single-node-multiGPU training is enabled as the script automatically trains the model on all available GPUs ( 1 GPU in our case given quota limit).
+(1) `src/data_versioninig/dvc_cli.sh` 
 
-It takes in a configuration `.json` file (here as example `train_cli_example_input.json`) that has the following arguments:
 
-> > --batch_size [int] : the size of batches used to train the model
-> > --layer_sizes list[int] : the size of the adjustable dense layer. * this is a list as the script tries all of the layer sizes specified. 
-> > --max_epochs [int] : a parameter to define the max number of epochs for model training
-> > --train_path [string] : path to training metadata
-> > --val_path [string] : path to validation metadata
-> > --input_mode [string]: mode of input, current it only support TFData
+*Workflow Container*
 
-(2) `src/models/Dockerfile` - This dockerfile starts with  `FROM tensorflow/tensorflow:2.13.0-gpu`. This statement uses the tensorflow-gpu version 2.13.0. as the base image.
+- This container can build the whole sequence pipeline in Vertex AI to achieve serverless training.
 
-(3) `src/models/run_docker.sh` Shell script to run the container
+(1) `src/workflow/cli.py` - this script creates the pipeline and execute different parameter arguemnts
+(2) `src/workflow/Pipfile` - this file contains the Python packages, sources, and requirments to run whe workflow
+(3) `src/workflow/compress.yaml` - this file defines the pipeline structure
+(4) `src/workflow/Dockerfile` - the file sets the docker environment
+
+
+
+```
+cd src/preprocessing/
+
+```
+
+
+
 
 To run Dockerfile:
 1. `docker build -t training -f Dockerfile .`
