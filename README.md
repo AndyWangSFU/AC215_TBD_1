@@ -109,42 +109,6 @@ The W&B screenshot below displays the model_size, quantization_method, and out-o
 
 *2. Vertex AI Pipelines (Kubeflow) and Cloud Functions Integration*
 
-**Preprocess Container**
-Please refer to Milestone3 regarding the rationale and code structure of the preprocessing container.
-(1) `src/preprocessing/data_loader.py` - This script downloads and uploads data to and from GCP. 
-
-(2) `src/preprocessing/process.py` - This script performs the preprocessing steps on the metadata and images. 
-
-(3) `src/preprocessing/requirements.txt` - We used the following packages to help us preprocess here - Numpy, opencv-python-headless, Pillow, albumentations, google-cloud-storage, pandas
-
-(4) `src/preprocessing/Pipefile and src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
-
-(5) `src/preprocessing/Dockerfile` - This dockerfile starts with python:3.9-slim-bookworm. This attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
-
-To run Dockerfile - make sure `ac215-tbd-1.json` is downloaded into `src/preprocessing/secrets/` to enable GCP authentication.
-
-```
-cd src/preprocessing/
-docker build -t tbd1-preprocess -f Dockerfile .
-docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
-
-# if running the container for the first time, you might need to run:
-pipenv install -r requirements.txt
-```
-
-
-**Model Compression Container**
-
-
-Below, we can see our Weights & Biases page while training our compression model:
-
-
-**Model Training Container**
-
-
-
-
-
 **Workflow Container**
 
 
@@ -171,6 +135,37 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py â
 <ins>**Code Structure**</ins>
 
 
+**Preprocess Container**
+Please refer to Milestone3 regarding the rationale and code structure of the preprocessing container.
+
+(1) `src/preprocessing/data_loader.py` - This script downloads and uploads data to and from GCP. 
+
+(2) `src/preprocessing/process.py` - This script performs the preprocessing steps on the metadata and images. 
+
+(3) `src/preprocessing/requirements.txt` - We used the following packages to help us preprocess here - Numpy, opencv-python-headless, Pillow, albumentations, google-cloud-storage, pandas
+
+(4) `src/preprocessing/Pipefile and src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
+
+(5) `src/preprocessing/Dockerfile` - This dockerfile starts with python:3.9-slim-bookworm. This attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+
+To run Dockerfile - make sure `ac215-tbd-1.json` is downloaded into `src/preprocessing/secrets/` to enable GCP authentication.
+
+```
+cd src/preprocessing/
+docker build -t tbd1-preprocess -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
+```
+
+*Model Training Container*
+
+- This container contains the training scripts and modeling components, which utilizes data from our GCP bucket. After performing the whole training process, the trained model will be saved back to GCP bucket. Please note that we did not end up completely implementing the serverless training via vertex AI (as suggested tutorial here: https://github.com/dlops-io/model-training/tree/main), but we left the structure here. However, we did make the training container callable and ran the training container like the other containers using the vertex AI pipeline in similar manners.
+
+(1) `src/training/multimodal_binary_training.py` - this script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with specified hyperparameters. Model artifacts and metrics are all stored in W&B. The resulting run model is saved in GCP bucket.
+
+(2) `src/training/package` - this is our attempted model training Python code package, a part of the container structure, but was not ultimately used.
 
 *Model Compression Container*
 
@@ -183,17 +178,6 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py â
 (3) `src/model_compression/docker-entrypoint.sh`: Specifies entry point to the Docker container. 
 
 (4) `src/model_compression/run_docker.sh`: Shell script to call to run the container locally.
-
-
-*Model Training Container*
-
-- This container contains the training scripts and modeling components, which utilizes data from our GCP bucket. After performing the whole training process, the trained model will be saved back to GCP bucket. Please note that we did not end up completely implementing the serverless training via vertex AI (as suggested tutorial here: https://github.com/dlops-io/model-training/tree/main), but we left the structure here. However, we did make the training container callable and ran the training container like the other containers using the vertex AI pipeline in similar manners.
-
-(1) `src/training/multimodal_binary_training.py` - this script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with specified hyperparameters. Model artifacts and metrics are all stored in W&B. The resulting run model is saved in GCP bucket.
-
-(2) `src/training/package` - this is our attempted model training Python code package, a part of the container structure, but was not ultimately used.
-
-
 
 
 *Workflow Container*
