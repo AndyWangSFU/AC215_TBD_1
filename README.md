@@ -90,9 +90,11 @@ In this project we aim to build and deploy a model that can detecting fake conte
 
 We address each of the objectives for Milestone 4 in the following ways:
 
-*1. Distillation/Quantization/Compression*
+*1. Compression (Quantization)*
 
-To enable enable our deployment in a resource-constrained environment, we utilize a compression technique that (kyle continues)
+For model compression, we compared two different quantization methods: 
+1. float16 quanitzation for weights. This method decreased model size by 50% but did not lead to any decrease in out-of-sample model performance.
+2, int16 quantization for activations and int8 quantization activations for weights. This method decreased model size by 75% but also decreased out-of-sample AUC by ~ 5%.
 
 ![WhatsApp Image 2023-10-27 at 8 19 28 PM](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/ca3ff2d6-549f-4082-9ff8-df07cffd4584)
 
@@ -151,7 +153,11 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py â
 
 - This container incorporates the model compression technique. 
 
-(1) `src/data_versioninig/dvc_cli.sh` 
+(1) `src/model_compression/downsize.py`: This script essentially takes in the quantization method and the path GCS bucket path of the raw model and first turns the model into a TFLite model and then performs the specified quantization (float 16 or int8-int16 quantization).
+
+(2) `src/model_compression/Dockerfile`: The callable container to run the model_compression component either locally or as part of the VertexAI pipeline workflow.
+
+(3) `src/model_compression/docker-entrypoint.sh`: Specifies entry point to the Docker container. 
 
 
 *Model Training Container*
