@@ -30,7 +30,6 @@ Project Organization
             │   ├── docker-entrypoint.sh
             │   ├── downsize_model.py
             │   ├── model_helpers.py
-            │   ├── multimodal_binary_training.py
             │   ├── requirements.txt
             │   └── run_docker.sh
             ├── training      <- model training and evaluation
@@ -186,9 +185,11 @@ pipenv install -r requirements.txt
 
 (2) `src/model_compression/Dockerfile`: The callable container to run the model_compression component either locally or as part of the VertexAI pipeline workflow.
 
-(3) `src/model_compression/docker-entrypoint.sh`: Specifies entry point to the Docker container. 
+(3) `src/model_compression/model_helpers.py` Helper functions that we import into downsize.py.
 
-(4) `src/model_compression/run_docker.sh`: Shell script to call to run the container locally.
+(4) `src/model_compression/docker-entrypoint.sh`: Specifies entry point to the Docker container. 
+
+(5) `src/model_compression/run_docker.sh`: Shell script to call to run the container locally.
 
 
 *Workflow Container*
