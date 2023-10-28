@@ -118,6 +118,8 @@ After the docker is running, we can call `python cli.py` to call the pipeline. T
 
 ![Picture1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/629ddff3-9a8d-47f3-a4a9-f8c17aa3a678)
 
+<img width="1204" alt="Screenshot 2023-10-27 at 7 52 46 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/7edcd404-a8ff-4ff7-9e76-0aab3a4b6359">
+
 
 *Figure 1: Pipeline run analysis*
 
@@ -128,7 +130,13 @@ Behind the scenes, all these containers’ images are pushed to Docker hub. The 
 - `MODEL_COMPRESSION_IMAGE` = "ksiyang/multimodal_fakenews_detector_model_compression"
 - `MODEL_TRAIN_IMAGE` = "ksiyang/model_training"
 
-In case anyone wants to test the connection with Vertex AI, call python cli.py – s1. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
+In case anyone wants to test the connection with Vertex AI, we should initially run Dockerfile:
+```
+1. `docker build -t workflow -f Dockerfile .`
+2. `sh run_docker.sh`
+```
+
+Then, we call `python cli.py – s1`. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
 
 
 
@@ -192,12 +200,7 @@ pipenv install -r requirements.txt
 
 (4) `src/workflow/Dockerfile` - the file sets the docker environment
 
-<img width="1204" alt="Screenshot 2023-10-27 at 7 52 46 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/7edcd404-a8ff-4ff7-9e76-0aab3a4b6359">
 
 
 
-
-To run Dockerfile:
-1. `docker build -t training -f Dockerfile .`
-2. `sh run_docker.sh`
 
