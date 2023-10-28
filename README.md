@@ -44,8 +44,8 @@ Project Organization
             │   ├── cli.py (not finally used)
             │   ├── cli.sh (not finally used)
             │   ├── multimodal_binary_training.py
-            │   ├── docker-entrypoint.sh (not finally used)
-            │   ├── docker-shell.sh (not finally used)
+            │   ├── docker-entrypoint.sh 
+            │   ├── docker-shell.sh 
             │   ├── requirements.txt
             │   ├── train_cli_example_input.json
             │   └── run_docker.sh
@@ -93,8 +93,11 @@ We address each of the objectives for Milestone 4 in the following ways:
 *1. Compression (Quantization)*
 
 For model compression, we compared two different quantization methods: 
-1. float16 quanitzation for weights. This method decreased model size by 50% but did not lead to any decrease in out-of-sample model performance.
-2, int16 quantization for activations and int8 quantization activations for weights. This method decreased model size by 75% but also decreased out-of-sample AUC by ~ 5%.
+- float16 quanitzation for weights. This method decreased model size by 50% but did not lead to any decrease in out-of-sample model performance.
+ 
+- int16 quantization for activations and int8 quantization activations for weights. This method decreased model size by 75% but also decreased out-of-sample AUC by ~ 5%.
+
+The W&B screenshot below displays the model_size, quantization_method, and out-of-sample inference performance of these three quantization methods:
 
 ![WhatsApp Image 2023-10-27 at 8 19 28 PM](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/ca3ff2d6-549f-4082-9ff8-df07cffd4584)
 
@@ -108,6 +111,26 @@ For model compression, we compared two different quantization methods:
 
 **Preprocess Container**
 Please refer to Milestone3 regarding the rationale and code structure of the preprocessing container.
+(1) `src/preprocessing/data_loader.py` - This script downloads and uploads data to and from GCP. 
+
+(2) `src/preprocessing/process.py` - This script performs the preprocessing steps on the metadata and images. 
+
+(3) `src/preprocessing/requirements.txt` - We used the following packages to help us preprocess here - Numpy, opencv-python-headless, Pillow, albumentations, google-cloud-storage, pandas
+
+(4) `src/preprocessing/Pipefile and src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
+
+(5) `src/preprocessing/Dockerfile` - This dockerfile starts with python:3.9-slim-bookworm. This attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
+
+To run Dockerfile - make sure `ac215-tbd-1.json` is downloaded into `src/preprocessing/secrets/` to enable GCP authentication.
+
+```
+cd src/preprocessing/
+docker build -t tbd1-preprocess -f Dockerfile .
+docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
+
+# if running the container for the first time, you might need to run:
+pipenv install -r requirements.txt
+```
 
 
 **Model Compression Container**
@@ -159,6 +182,8 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py �
 
 (3) `src/model_compression/docker-entrypoint.sh`: Specifies entry point to the Docker container. 
 
+(4) `src/model_compression/run_docker.sh`: Shell script to call to run the container locally.
+
 
 *Model Training Container*
 
@@ -175,21 +200,15 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py �
 
 - This container can build the whole sequence pipeline in Vertex AI to achieve serverless training.
 
-(1) `src/workflow/cli.py` - this script creates the pipeline and execute different parameter arguemnts
+(1) `src/workflow/cli.py` - this script creates the VertexAI pipeline and calls different containers or all containers sequentially as a pipeline.
 
-(2) `src/workflow/Pipfile` - this file contains the Python packages, sources, and requirments to run whe workflow
+(2) `src/workflow/Pipfile` - this file contains the Python packages, sources, and requirements to run the workflow
 
 (3) `src/workflow/compress.yaml` - this file defines the pipeline structure
 
 (4) `src/workflow/Dockerfile` - the file sets the docker environment
 
 <img width="1204" alt="Screenshot 2023-10-27 at 7 52 46 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/7edcd404-a8ff-4ff7-9e76-0aab3a4b6359">
-
-
-```
-cd src/preprocessing/
-
-```
 
 
 
