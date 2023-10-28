@@ -155,9 +155,13 @@ In case anyone wants to test the connection with Vertex AI, call python cli.py â
 
 *Model Training Container*
 
-- This container 
+- This container contains the training scripts and modeling components, which utilizes data from our GCP bucket. After performing the whole training process, the trained model will be saved back to GCP bucket. Please note that we did not end up completely implementing the serverless training via vertex AI (as suggested tutorial here: https://github.com/dlops-io/model-training/tree/main), but we left the structure here. However, we did make the training container callable and ran the training container like the other containers using the vertex AI pipeline in similar manners.
 
-(1) `src/data_versioninig/dvc_cli.sh` 
+(1) `src/training/multimodal_binary_training.py` - this script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with specified hyperparameters. Model artifacts and metrics are all stored in W&B. The resulting run model is saved in GCP bucket.
+
+(2) `src/training/package` - this is our attempted model training Python code package, a part of the container structure, but was not ultimately used.
+
+
 
 
 *Workflow Container*
