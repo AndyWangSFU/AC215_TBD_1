@@ -94,6 +94,7 @@ We address each of the objectives for Milestone 4 in the following ways:
 
 To enable enable our deployment in a resource-constrained environment, we utilize a compression technique that (kyle continues)
 
+![WhatsApp Image 2023-10-27 at 8 19 28 PM](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/ca3ff2d6-549f-4082-9ff8-df07cffd4584)
 
 
 <!-- <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3"> -->
