@@ -7,6 +7,7 @@ from tensorflow.python.keras import backend as K
 from tensorflow.keras.models import Model
 from google.cloud import storage
 import tensorflow_hub as hub
+import tensorflow_text as text
 import wandb    
 
 
@@ -14,8 +15,8 @@ GCP_PROJECT = "ac215-398714"
 GCS_MODELS_BUCKET_NAME = "fakenew_classifier_data_bucket"
 BEST_MODEL = "models/compressed"
 ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}/{BEST_MODEL}"
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/mnt/c/Users/kylek/OneDrive - Harvard University/AC215/project/AC215_TBD_1/secrets/ac215-tbd-1.json'
-os.environ["WANDB_KEY"] = "/mnt/c/Users/kylek/OneDrive - Harvard University/AC215/project/AC215_TBD_1/secrets/wandb_key.txt"
+#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/mnt/c/Users/kylek/OneDrive - Harvard University/AC215/project/AC215_TBD_1/secrets/ac215-tbd-1.json'
+#os.environ["WANDB_KEY"] = "/mnt/c/Users/kylek/OneDrive - Harvard University/AC215/project/AC215_TBD_1/secrets/wandb_key.txt"
 
 
 with open(os.environ["WANDB_KEY"], 'r') as f:
@@ -95,41 +96,19 @@ def preprocess_data_inference(image_path, text_input):
     image = preprocess_image(image_path)
     text = preprocess_text(text_input)
 
-    return {"image": image, "text_word_ids": text["input_word_ids"], "text_mask": text["input_mask"], "text_type_ids": text["input_type_ids"]}
+    return_dict = {
+        'image': tf.expand_dims(image,axis=0),
+        'text' : {'input_type_ids': tf.expand_dims(text['input_type_ids'],axis=0),
+        'input_mask': tf.expand_dims(text['input_mask'],axis=0),
+        'input_word_ids': tf.expand_dims(text["input_word_ids"],axis=0)}}
+    return return_dict  
 
-preprocessed_data = preprocess_data_inference('./test.jpg', '1936 in the United States was “much hotter than 2023')
 
 def make_predictions(preprocessed_data):
     # Make predictions using the loaded model
-    predictions = prediction_model.predict([preprocessed_data])
+    predictions = prediction_model.predict(preprocessed_data)
 
     return predictions
-
-def make_prediction(image_path):
-    check_model_change()
-
-    # Load & preprocess
-    test_data = load_preprocess_image_from_path(image_path)
-
-    # Make prediction
-    prediction = prediction_model.predict(test_data)
-    idx = prediction.argmax(axis=1)[0]
-    prediction_label = data_details["index2label"][str(idx)]
-
-    if prediction_model.layers[-1].activation.__name__ != "softmax":
-        prediction = tf.nn.softmax(prediction).numpy()
-        print(prediction)
-
-    poisonous = False
-    if prediction_label == "amanita":
-        poisonous = True
-
-    return {
-        "input_image_shape": str(test_data.element_spec.shape),
-        "prediction_shape": prediction.shape,
-        "prediction_label": prediction_label,
-        "prediction": prediction.tolist(),
-        "accuracy": round(np.max(prediction) * 100, 2),
-        "poisonous": poisonous,
-    }
-
+#load_prediction_model()
+#preprocessed_data = preprocess_data_inference('./test.jpg', "Biden promotes 'DARK BRANDON' MUG IN NEW AD")
+#make_predictions([preprocessed_data['image'], preprocessed_data['text']])
