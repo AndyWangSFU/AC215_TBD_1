@@ -113,6 +113,6 @@ def make_predictions(preprocessed_data):
 """
 How you would test a single prediction
 """
-#load_prediction_model()
+load_prediction_model()
 #preprocessed_data = preprocess_data_inference('./test.jpg', "Biden promotes 'DARK BRANDON' MUG IN NEW AD")
 #make_predictions([preprocessed_data['image'], preprocessed_data['text']])
