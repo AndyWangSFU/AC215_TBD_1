@@ -10,8 +10,8 @@ RUN set -ex; \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends build-essential && \
-    pip install --no-cache-dir --upgrade pip && \
     pip install pipenv && \
+    pip install --no-cache-dir --upgrade pip && \
     mkdir -p /app
 
 WORKDIR /app
@@ -23,4 +23,5 @@ RUN pip install -r requirements.txt
 
 
 # Entry point
-ENTRYPOINT ["/bin/bash","docker-entrypoint.sh"]
+#ENTRYPOINT ["/bin/bash","docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]

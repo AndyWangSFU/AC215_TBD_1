@@ -26,7 +26,7 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
 
-def load_prediction_model(model_path):
+def load_prediction_model(model_path=None):
 
     global prediction_model
     print("Loading Model...")
@@ -37,11 +37,11 @@ def load_prediction_model(model_path):
                                                   custom_objects={'KerasLayer': hub.KerasLayer})
     """
     #loading from wandb
-    wandb.login(key=wandb)
+    wandb.login(key=wandb_key)
     run = wandb.init()
     artifact = run.use_artifact('tbd_2/AC215_TBD_1-src_model_deployment/binary_clf_model:v0', type='model')
     artifact_dir = artifact.download()
-
+    wandb.finish()
     prediction_model = tf.keras.models.load_model("artifacts/binary_clf_model:v0/raw_model",
                                                 custom_objects={'KerasLayer': hub.KerasLayer})
     print("Model Loaded")
@@ -106,9 +106,13 @@ def preprocess_data_inference(image_path, text_input):
 
 def make_predictions(preprocessed_data):
     # Make predictions using the loaded model
-    predictions = prediction_model.predict(preprocessed_data)
+    predictions = prediction_model.predict([preprocessed_data['image'], preprocessed_data['text']])
+    fake_probability = 1 - predictions[0]
+    return fake_probability
 
-    return predictions
+"""
+How you would test a single prediction
+"""
 #load_prediction_model()
 #preprocessed_data = preprocess_data_inference('./test.jpg', "Biden promotes 'DARK BRANDON' MUG IN NEW AD")
 #make_predictions([preprocessed_data['image'], preprocessed_data['text']])
