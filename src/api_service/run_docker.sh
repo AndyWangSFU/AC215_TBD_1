@@ -1,5 +1,5 @@
 # Define some environment variables
-export IMAGE_NAME="fake-news-classifier-api-service"
+export IMAGE_NAME="api_service"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/secrets/
 export GCS_BUCKET_NAME="fakenew_classifier_data_bucket"

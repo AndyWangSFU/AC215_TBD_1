@@ -1,17 +1,17 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 import asyncio
-from api.tracker import TrackerService
+# from api.tracker import TrackerService
 import pandas as pd
 import os
-from fastapi import File
+from fastapi import File, Form, UploadFile
 from tempfile import TemporaryDirectory
 from api import model
 import random
 import string
 
 # Initialize Tracker Service
-tracker_service = TrackerService()
+# tracker_service = TrackerService()
 
 # Setup FastAPI app
 app = FastAPI(title="API Server", description="API Server", version="v1")
@@ -32,11 +32,11 @@ def generate_sequence(length=6):
     return sequence
 
 
-@app.on_event("startup")
-async def startup():
-    print("Startup tasks")
-    # Start the tracker service
-    asyncio.create_task(tracker_service.track())
+# @app.on_event("startup")
+# async def startup():
+#     print("Startup tasks")
+#     # Start the tracker service
+#     asyncio.create_task(tracker_service.track())
 
 
 # Routes
@@ -45,33 +45,46 @@ async def get_index():
     return {"message": "Welcome to the API Service"}
 
 
+@app.get("/test")
+async def test():
+    print("test")
+    return {"message": "dsfsddf"}
 
+
+@app.post("/predict")
 async def predict(
-    image: UploadFile = File(...),  # Expect an image file
-    text: UploadFile = File(...)  # Expect a text file
+    image: bytes = File(...),  # Expect an image file
+    text: str = Form(...)  # Expect a text file
 ):
     print("predict image:", len(image), type(image))
     print("predict text:", len(text), type(text))
-
+    
 
     # Save the image
-    with TemporaryDirectory() as image_dir:
+    
+    image_dir = "./images"
+    if not os.path.exists(image_dir):
+        os.makedirs(image_dir)
+    random_sequence = generate_sequence()
+    # print(random_sequence)    
+    print(image)
+    print(text)
+    
+    image_path = os.path.join(image_dir, f"{random_sequence}.jpg")
+    with open(image_path, "wb") as output:
+        output.write(image)
 
-        random_sequence = generate_sequence()
-        # print(random_sequence)    
+    text_dir = "./text" 
+    if not os.path.exists(text_dir):
+        os.makedirs(text_dir)
+    # print(random_sequence)    
 
-        image_path = os.path.join(image_dir, f"{random_sequence}.jpg")
-        with open(image_path, "wb") as output:
-            output.write(image)
-
-    with TemporaryDirectory() as text_dir:
-
-        random_sequence_2 = generate_sequence()
-        # print(random_sequence)    
-
-        text_path = os.path.join(text_dir, f"{random_sequence_2}.txt")
-        with open(text_path, "wb") as output:
-            output.write(text)
+    text_path = os.path.join(text_dir, f"{random_sequence}.txt")
+    print(os.getcwd())
+    print(image_path)
+    print(text_path)
+    with open(text_path, "w") as output:
+        output.write(text)
 
 
     preprocessed_data = model.preprocess_data_inference(image_path, text)
