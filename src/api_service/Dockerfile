@@ -20,7 +20,7 @@ EXPOSE 9000
 ADD requirements.txt *.py /app/
 ADD *.sh /app/
 RUN pip install -r requirements.txt
-
+RUN pip install python-multipart
 
 # Entry point
 #ENTRYPOINT ["/bin/bash","docker-entrypoint.sh"]

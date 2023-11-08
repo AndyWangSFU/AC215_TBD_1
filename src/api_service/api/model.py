@@ -15,8 +15,8 @@ GCP_PROJECT = "ac215-398714"
 GCS_MODELS_BUCKET_NAME = "fakenew_classifier_data_bucket"
 BEST_MODEL = "models/compressed"
 ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}/{BEST_MODEL}"
-#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/mnt/c/Users/kylek/OneDrive - Harvard University/AC215/project/AC215_TBD_1/secrets/ac215-tbd-1.json'
-#os.environ["WANDB_KEY"] = "/mnt/c/Users/kylek/OneDrive - Harvard University/AC215/project/AC215_TBD_1/secrets/wandb_key.txt"
+#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '../secrets/ac215-tbd-1.json'
+#os.environ["WANDB_KEY"] = "../secrets/wandb_key.txt"
 
 
 with open(os.environ["WANDB_KEY"], 'r') as f:
@@ -114,5 +114,5 @@ def make_predictions(preprocessed_data):
 How you would test a single prediction
 """
 load_prediction_model()
-#preprocessed_data = preprocess_data_inference('./test.jpg', "Biden promotes 'DARK BRANDON' MUG IN NEW AD")
-#make_predictions([preprocessed_data['image'], preprocessed_data['text']])
+#preprocessed_data = preprocess_data_inference('../images/G81Mwi.jpg', "Biden promotes 'DARK BRANDON' MUG IN NEW AD")
+#make_predictions(preprocessed_data)
