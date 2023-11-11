@@ -21,8 +21,10 @@ The following commands are available:
 \033[0m
 "
 
-if [ "${DEV}" = 1 ]; then
+if [ "${DEV}" = 0 ]; then
+  echo "development"
   pipenv shell
 else
+  echo "production"
   uvicorn_server_production
 fi

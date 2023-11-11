@@ -23,5 +23,5 @@ RUN pip install -r requirements.txt
 RUN pip install python-multipart
 
 # Entry point
-#ENTRYPOINT ["/bin/bash","docker-entrypoint.sh"]
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash","docker-entrypoint.sh"]
+#ENTRYPOINT ["/bin/bash"]
