@@ -1,12 +1,12 @@
 all:
     vars:
-      ansible_user: sa_100110341521630214262
+      ansible_user: sa_114994759845458165269
       ansible_ssh_private_key_file: "./secrets/ssh-key-deployment"
       gcp_service_account_file: "./secrets/deployment.json"
       gcp_service_account_email: "deployment@ac215-398714.iam.gserviceaccount.com"
       gcp_auth_kind: "serviceaccount"
       gcp_scopes: "https://www.googleapis.com/auth/compute"
-      gcp_project: "ac215-project"
+      gcp_project: "ac215-398714"
       gcp_region: "us-east1"
       gcp_zone: "us-east1-b"
       docker_network_name: "appnetwork"
@@ -19,4 +19,4 @@ all:
     children:
         appserver:
             hosts:
-                34.135.118.221:
+                35.237.197.239:
