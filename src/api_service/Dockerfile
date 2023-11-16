@@ -19,6 +19,7 @@ EXPOSE 9000
 # Add Pipfile, Pipfile.lock
 ADD requirements.txt *.py /app/
 ADD *.sh /app/
+ADD api/*.py /app/api/
 RUN pip install -r requirements.txt
 RUN pip install python-multipart
 
