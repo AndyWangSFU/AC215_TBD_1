@@ -19,6 +19,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Icon from '@material-ui/core/Icon';
 import { Link } from 'react-router-dom';
 
+import logoImage from './logo.png'; 
 
 import styles from './styles';
 
@@ -53,7 +54,8 @@ const Header = (props) => {
                     <Link to="/" className={classes.appLink}>
                         <Typography className={classes.appTitle} >
                         {/* <span className={classes.strikethroughText}>🍄 Mushroom</span>  */}
-                        Fake News Identifier
+                            <img src={logoImage} alt="Logo" className={classes.logo} />
+                            Fake News Identifier
                         </Typography>
                     </Link>
 
@@ -65,10 +67,10 @@ const Header = (props) => {
                             <Icon>home</Icon>
                             <Typography variant="caption">&nbsp;Home</Typography>
                         </IconButton>
-                        <IconButton color="inherit" component={Link} to="/experiments">
+                        {/* <IconButton color="inherit" component={Link} to="/experiments">
                             <Icon>experiments</Icon>
                             <Typography variant="caption">&nbsp;Experiments</Typography>
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton color="inherit" component={Link} to="/currentmodel">
                             <Icon>model_training</Icon>
                             <Typography variant="caption">&nbsp;Model</Typography>
@@ -95,13 +97,12 @@ const Header = (props) => {
                             </ListItem>
                         </List>
                         <Divider />
-                        <List>
+                        {/* <List>
                             <ListItem button key='menuitem12' component={Link} to="/experiments">
                                 <ListItemIcon><Icon>experiments</Icon></ListItemIcon>
                                 <ListItemText primary='Experiments' />
                             </ListItem>
-
-                        </List>
+                        </List> */}
                         <List>
                             <ListItem button key='menuitem12' component={Link} to="/currentmodel">
                                 <ListItemIcon><Icon>star</Icon></ListItemIcon>

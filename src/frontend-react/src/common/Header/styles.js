@@ -13,9 +13,15 @@ const styles = theme => ({
     },
     appTitle: {
         fontSize: "1.286rem",
-        lineHeight: "1.33",
+        lineHeight: "2.33",
         fontWeight: "800",
         letterSpacing: "3px"
+    },
+    logo: {
+        marginRight: theme.spacing(1), // Adjust the spacing as needed
+        width: '60px', // Set the width of your logo
+        height: 'auto', // Maintain aspect ratio
+        verticalAlign: 'middle', // Center the image
     },
     strikethroughText: {
         textDecoration: "line-through",
