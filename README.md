@@ -71,7 +71,7 @@ Project Organization
 
 ------------
 
-**Application Design**
+### Application Design
 
 Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture abd Technical Architecture to ensure all our components work together.
 
@@ -79,6 +79,7 @@ Here is our Solution Architecture:
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/c022ad7a-57ed-4bb2-975a-798e71e6e7f1)">
 Figure 1: Solution architecture of project
+
 
 
 Here is our Technical Architecture:
@@ -125,7 +126,7 @@ The following are the folders from the previous milestones:
 ```
 
 **API Service Container**
-This container has all the python files to run and expose the backend apis.
+: This container has all the python files to run and expose the backend apis.
 
 To run the container locally:
 - Open a terminal and go to the location where `AC215_TBD_1/src/api-service`
@@ -134,7 +135,7 @@ To run the container locally:
 - To view and test APIs go to `http://localhost:9000/docs`
 
 **Frontend Container**
-This container contains all the files to develop and build a react app. There are dockerfiles for both development and production.
+: This container contains all the files to develop and build a react app. There are dockerfiles for both development and production.
 
 To run the container locally:
 - Open a terminal and go to the location where `AC215_TBD_1/src/frontend`
@@ -145,7 +146,7 @@ To run the container locally:
 
 
 **Deployment Container**
-This container helps manage building and deploying all our app containers. The deployment is to GCP and all docker images go to Google Container Registry (GCR). 
+: This container helps manage building and deploying all our app containers. The deployment is to GCP and all docker images go to Google Container Registry (GCR). 
 
 To run the container locally:
 - Open a terminal and go to the location where `AC215_TBD_1/src/deployment`
