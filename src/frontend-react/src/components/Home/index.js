@@ -30,20 +30,22 @@ const Home = (props) => {
     }
     const handleOnChange = (event) => {
         console.log(event.target.files);
-        setImage(URL.createObjectURL(event.target.files[0]));
+        const file = event.target.files[0];
 
-        var formData = new FormData();
-        formData.append("file", event.target.files[0]);
-        DataService.Predict(formData)
-            .then(function (response) {
-                console.log(response.data);
-                setPrediction(response.data);
-            })
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setImage(reader.result);
+            };
+
+            reader.readAsDataURL(file);
+        }
     }
 
     const handlePredictClick = () => {
         const formData = new FormData();
-        formData.append("file", inputFile.current.files[0]);
+        formData.append("image", inputFile.current.files[0]);
         formData.append("text", text);
     
         DataService.Predict(formData)
@@ -63,7 +65,12 @@ const Home = (props) => {
                 <Container maxWidth="md" className={classes.container}>
                     {prediction && (
                         <Typography variant="h4" gutterBottom align='center'>
-                            {/* ... (existing code) */}
+                        {prediction["Fake Likelihood"]==="High" &&
+                            <span className={classes.false}>{"Fake news risk: " + prediction["Fake Likelihood"] + " (" + 100*prediction["Fake Probability"] + "%)"}</span>
+                        }
+                        {prediction["Fake Likelihood"]==="Low" &&
+                            <span className={classes.true}>{"Fake news risk: " + prediction["Fake Likelihood"] + " (" + 100*prediction["Fake Probability"] + "%)"}</span>
+                        }
                         </Typography>
                     )}
 
