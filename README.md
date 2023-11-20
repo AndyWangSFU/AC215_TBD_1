@@ -60,7 +60,7 @@ Project Organization
 Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture abd Technical Architecture to ensure all our components work together.
 
 Here is our Solution Architecture:
-<img src="images/solution-arch.png"  width="800">
+<img src="![Uploading WhatsApp Image 2023-11-20 at 16.56.45.jpeg…]()"  width="800">
 
 Here is our Technical Architecture:
 <img src="images/technical-arch.png"  width="800">
