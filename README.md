@@ -13,6 +13,10 @@ Project Organization
 --------------------
     
     ├── LICENSE
+    ├── .gitignore
+    ├── notebooks
+    ├── .gitattributes
+    ├── reports
     ├── README.md
     ├── references                  <- Reference materials such as papers
     ├── presentations               <- Folder containing our midterm presentation
