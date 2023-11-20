@@ -1,70 +1,6 @@
-Milestone4
-==============================
 
-AC215 - Milestone4
-
-Project Organization
-------------
-      ├── LICENSE
-      ├── README.md
-      ├── notebooks
-      ├── references          <- a list of papers related to our project
-      ├── requirements.txt
-      ├── .gitignore
-      ├── .gitattributes
-      ├── reports
-      ├── presentations        
-      │     └── midterm.pdf     <- our midterm presentation slides
-      └── src
-            ├── preprocessing
-            │   ├── Dockerfile
-            │   ├── data_loader.py
-            │   ├── process.py
-            │   ├── requirements.txt
-            │   ├── docker-entrypoint.sh
-            │   ├── docker-shell.sh
-            │   ├── Pipfile
-            │   └── Pipfile.lock
-            ├── model_compression
-            │   ├── Dockerfile
-            │   ├── docker-entrypoint.sh
-            │   ├── downsize_model.py
-            │   ├── model_helpers.py
-            │   ├── requirements.txt
-            │   └── run_docker.sh
-            ├── training      <- model training and evaluation
-            │   │── package (not finally used)
-            │   │       ├── trainer
-            │   │       │     └── multimodal_binary_training.py
-            │   │       ├── PKG-INFO.txt
-            │   │       ├── setup.cfg
-            │   │       └── setup.py
-            │   ├── Dockerfile
-            │   ├── cli.py (not finally used)
-            │   ├── cli.sh (not finally used)
-            │   ├── multimodal_binary_training.py
-            │   ├── docker-entrypoint.sh 
-            │   ├── docker-shell.sh 
-            │   ├── requirements.txt
-            │   ├── train_cli_example_input.json
-            │   └── run_docker.sh
-            └── workflow      <- scripts for automating data download, preprocess, model training, and compression
-                ├── Dockerfile
-                ├── Pipfile
-                ├── Pipfile.lock
-                ├── cli.py
-                ├── compress.yaml
-                ├── docker-entrypoint.sh
-                ├── docker-shell.sh
-                ├── download.yaml
-                ├── model.py
-                ├── pipeline.yaml
-                ├── sample-pipeline1.yaml
-                └── train.yaml    
-
-
---------
-# AC215 - Milestone4 - “Multimodal Fake News Detector”
+# AC215 - Milestone5 - “Multimodal Fake News Detector”
+After completions of building a robust ML Pipeline in our previous milestone we have built a backend api service and frontend app. This will be our user-facing application that ties together the various components built in previous milestones.
 
 **Team Members**
 Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
@@ -72,139 +8,149 @@ Kyle Ke, Boshen Yan, Fuchen Li, Zihan Wang, Qassi Gaba
 **Group Name**
 TBD_1
 
-**Project**
-In this project we aim to build and deploy a model that can detecting fake content when text and images are provided as inputs. The rationale is that when a user chooses to use our API and, for instance, check news they found online, they might not have an image but will most likely have text. 
 
-<!-- <p align="center">
-  <img width="460" height="300" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/53b18850-f0d1-47a4-8f78-71724c18faff">
-</p>
+Project Organization
+--------------------
+.
+├── LICENSE
+├── README.md
+├── references                  <- Reference materials such as papers
+├── presentations               <- Folder containing your midterm presentation
+│   └── midterm.pdf
+├── requirements.txt
+├── src
+│   ├── preprocessing          <- Scripts for dataset creation
+│   │   ├── ...
+│   ├── model_compression       <- Code for data processing
+│   │   ├── ...
+│   └── training                 <- Model training, evaluation, and prediction code
+│       ├── ...
+│   ├── workflow                 <- Scripts for automating data collection, preprocessing, modeling
+│       ├── ...
+│   ├── api-service              <- Code for App backend APIs
+│   │   ├── api
+│   │   ├── Dockerfile
+│   │   ├── docker-entrypoint.sh
+│   │   ├── docker-shell.sh
+│   │   ├── Pipfile
+│   │   ├── Pipfile.lock
+│   ├── frontend-react           <- Code for App frontend
+│   │   ├── conf
+│   │   │   ├── conf.d
+│   │   │   │   ├── default.conf
+│   │   ├── public
+│   │   │   ├── favicon.ico
+│   │   │   ├── index.html
+│   │   │   ├── manifest.json
+├── deployment                  <- Code for App deployment to GCP
+│   ├── deploy-create-instance.yml
+│   ├── deploy-docker-images.yml
+│   ├── deploy-provision-instance.yml
+│   ├── deploy-setup-containers.yml
+│   ├── deploy-setup-webserver.yml
+│   ├── inventory.yml
+│   ├── Dockerfile
+│   ├── docker-entrypoint.sh
+│   └── docker-shell.sh
 
-<p style="text-align: center;">Figure 1: Project data pipeline</p> -->
+------------
 
-****
+**Application Design**
 
-### Milestone4
+Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture abd Technical Architecture to ensure all our components work together.
 
-<ins>**Objectives for Milestone4**</ins>
+Here is our Solution Architecture:
+<img src="images/solution-arch.png"  width="800">
 
-We address each of the objectives for Milestone 4 in the following ways:
-
-*1. Compression (Quantization)*
-
-For model compression, we compared two different quantization methods: 
-- float16 quanitzation for weights. This method decreased model size by 50% but did not lead to any decrease in out-of-sample model performance.
- 
-- int16 quantization for activations and int8 quantization activations for weights. This method decreased model size by 75% but also decreased out-of-sample AUC by ~ 5%.
-
-The W&B screenshot below displays the model_size, quantization_method, and out-of-sample inference performance of these three quantization methods:
-
-![WhatsApp Image 2023-10-27 at 8 19 28 PM](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/ca3ff2d6-549f-4082-9ff8-df07cffd4584)
-
-*Figure 1: Quantization Method Comparison (inference only)*
+Here is our Technical Architecture:
+<img src="images/technical-arch.png"  width="800">
 
 
-<!-- <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/5d9e256a-c711-430f-b6da-b8f8ed4377c3"> -->
+**Backend API**
 
-<!-- Figure 2:    -->
+We built backend api service using fast API to expose model functionality to the frontend. We also added apis that will help the frontend display some key information about the model and data. 
+
+<img src="images/api-list.png"  width="800">
+
+**Frontend**
+
+A user friendly React app was built to identify fake news using deep learning model from the backend. Using the app a user can take upload the main image and title of a news article. The app will send the image and text to the backend api to get prediction results on the fake risk (likelihood) of the particular news article.
+
+Here are some screenshots of our app:
+<img src="images/frontend-1.png"  width="800">
+
+<img src="images/frontend-2.png"  width="800">
+
+**Deployment**
+
+We used Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible helps us manage infrastructure as code and this is very useful to keep track of our app infrastructure as code in GitHub. It helps use setup deployments in a very automated way.
+
+Here is our deployed app on a single VM in GCP:
+<img src="images/deployment-single-vm.png"  width="800">
 
 
-*2. Vertex AI Pipelines (Kubeflow) and Cloud Functions Integration*
+### Code Structure
 
-**Workflow Container**
-
-
-The workflow container follows a similar structure as the class demo. (Reference: https://github.com/dlops-io/ml-workflow#mushroom-app-ml-workflow-management). To activate the docker environment, run `sh docker-shell.sh`, and it will activate the environment with all necessary environment variables (GCP project name, service account, data bucket, and region). The GCP authentication steps are done in `docker-entrypoint.sh`. Together, this workflow container ships our code off to Vertex AI Pipelines and run each tasks in sequence.
-
-After the docker is running, we can call `python cli.py` to call the pipeline. There are 3 containers callable from `cli.py --- preprocessing` (to download and process the images), `models` (to train the models), and `model_compression` (to do model compression). These individual containers can be called as a single-element pipeline using `-d (download), -p(process), -t (model training), and -c (model compression)`. However, this is mainly for testing purposes. In real usage, use `python cli.py – w` to run the whole pipeline. The resulting pipeline can be visualized below on Vertex AI. 
-
-<img width="1204" alt="Screenshot 2023-10-27 at 7 52 46 PM" src="https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/7edcd404-a8ff-4ff7-9e76-0aab3a4b6359">
-
-![Picture1](https://github.com/AndyWangSFU/AC215_TBD_1/assets/48002686/629ddff3-9a8d-47f3-a4a9-f8c17aa3a678)
-
-
-*Figure 2: Pipeline run analysis*
-
-
-
-Behind the scenes, all these containers’ images are pushed to Docker hub. The links to the images are specified in the cli.py file (see below). We used these images and passed preset arguments to call the corresponding functions. 
-
-- `DATA_PREPROCESS_IMAGE` = "kirinlfc/fakenews-detector-data-preprocessor"
-- `MODEL_COMPRESSION_IMAGE` = "ksiyang/multimodal_fakenews_detector_model_compression"
-- `MODEL_TRAIN_IMAGE` = "ksiyang/model_training"
-
-In case anyone wants to test the connection with Vertex AI, we should initially run Dockerfile:
+The following are the folders from the previous milestones:
 ```
-1. `docker build -t workflow -f Dockerfile .`
-2. `sh run_docker.sh`
-```
-
-Then, we call `python cli.py – s1`. This command will start a sample pipeline that squares and adds numbers. (The same as the in-class demo.)
-
-
-
-<ins>**Code Structure**</ins>
-
-
-**Preprocess Container**
-Please refer to Milestone3 regarding the rationale and code structure of the preprocessing container.
-
-(1) `src/preprocessing/data_loader.py` - This script downloads and uploads data to and from GCP. 
-
-(2) `src/preprocessing/process.py` - This script performs the preprocessing steps on the metadata and images. 
-
-(3) `src/preprocessing/requirements.txt` - We used the following packages to help us preprocess here - Numpy, opencv-python-headless, Pillow, albumentations, google-cloud-storage, pandas
-
-(4) `src/preprocessing/Pipefile and src/preprocessing/Pipefile.lock` are used to manage project dependencies and their versions. They are commonly associated with the package manager Pipenv
-
-(5) `src/preprocessing/Dockerfile` - This dockerfile starts with python:3.9-slim-bookworm. This attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
-
-To run Dockerfile - make sure `ac215-tbd-1.json` is downloaded into `src/preprocessing/secrets/` to enable GCP authentication.
-
-```
-cd src/preprocessing/
-docker build -t tbd1-preprocess -f Dockerfile .
-docker run --rm -ti --mount type=bind,source="$(pwd)",target=/app tbd1-preprocess
-
-# if running the container for the first time, you might need to run:
-pipenv install -r requirements.txt
+- data-collector
+- data-processor
+- model-training
+- model-deploy
+- workflow
 ```
 
-*Model Training Container*
+**API Service Container**
+This container has all the python files to run and expose thr backend apis.
 
-- This container contains the training scripts and modeling components, which utilizes data from our GCP bucket. After performing the whole training process, the trained model will be saved back to GCP bucket. Please note that we did not end up completely implementing the serverless training via vertex AI (as suggested tutorial here: https://github.com/dlops-io/model-training/tree/main), but we left the structure here. However, we did make the training container callable and ran the training container like the other containers using the vertex AI pipeline in similar manners.
+To run the container locally:
+- Open a terminal and go to the location where `AC215_TBD_1/src/api-service`
+- Run `sh docker-shell.sh`
+- Once inside the docker container run `uvicorn_server`
+- To view and test APIs go to `http://localhost:9000/docs`
 
-(1) `src/training/multimodal_binary_training.py` - this script pulls in cleaned metadata and runs a prefetch-enabled TFData pipeline that resizes and normalizes the images and also turns the text into appropriate BERT inputs (text_input_mask, text_input_type_ids, text_input_word_ids), and fits models with specified hyperparameters. Model artifacts and metrics are all stored in W&B. The resulting run model is saved in GCP bucket.
+**Frontend Container**
+This container contains all the files to develop and build a react app. There are dockerfiles for both development and production
 
-(2) `src/training/package` - this is our attempted model training Python code package, a part of the container structure, but was not ultimately used.
-
-*Model Compression Container*
-
-- This container incorporates the model compression technique. 
-
-(1) `src/model_compression/downsize.py`: This script essentially takes in the quantization method and the path GCS bucket path of the raw model and first turns the model into a TFLite model and then performs the specified quantization (float 16 or int8-int16 quantization).
-
-(2) `src/model_compression/Dockerfile`: The callable container to run the model_compression component either locally or as part of the VertexAI pipeline workflow.
-
-(3) `src/model_compression/model_helpers.py` Helper functions that we import into downsize.py.
-
-(4) `src/model_compression/docker-entrypoint.sh`: Specifies entry point to the Docker container. 
-
-(5) `src/model_compression/run_docker.sh`: Shell script to call to run the container locally.
+To run the container locally:
+- Open a terminal and go to the location where `AC215_TBD_1/src/frontend`
+- Run `sh docker-shell.sh`
+- If running the container for the first time, run `yarn install`
+- Once inside the docker container run `yarn start`
+- Go to `http://localhost:3000` to access the app locally
 
 
-*Workflow Container*
+**Deployment Container**
+This container helps manage building and deployeing all our app containers. The deployment is to GCP and all docker images go to GCR. 
 
-- This container can build the whole sequence pipeline in Vertex AI to achieve serverless training.
+To run the container locally:
+- Open a terminal and go to the location where `AC215_TBD_1/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and Push Docker Containers to GCR (Google Container Registry)
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
 
-(1) `src/workflow/cli.py` - this script creates the VertexAI pipeline and calls different containers or all containers sequentially as a pipeline.
+- Create Compute Instance (VM) Server in GCP
+```
+ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+```
 
-(2) `src/workflow/Pipfile` - this file contains the Python packages, sources, and requirements to run the workflow
+- Provision Compute Instance in GCP
+Install and setup all the required things for deployment.
+```
+ansible-playbook deploy-provision-instance.yml -i inventory.yml
+```
 
-(3) `src/workflow/compress.yaml` - this file defines the pipeline structure
+- Setup Docker Containers in the  Compute Instance
+```
+ansible-playbook deploy-setup-containers.yml -i inventory.yml
+```
 
-(4) `src/workflow/Dockerfile` - the file sets the docker environment
+- Setup Webserver on the Compute Instance
+```
+ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+```
+Once the command runs go to `http://<External IP>/` 
 
-
-
-
-
+---
