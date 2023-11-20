@@ -1,5 +1,5 @@
 import React from 'react';
-import model_detail from './model_detail.jpg';
+import model_detail from './model_detail.png';
 
 const ImageComponent = () => {
     return (
