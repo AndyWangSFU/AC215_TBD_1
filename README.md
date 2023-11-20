@@ -19,9 +19,9 @@ Project Organization
     │   └── midterm.pdf
     ├── requirements.txt
     ├── src
-    │   ├── preprocessing          <- Code for data processing. See previous milestone for content details.
+    │   ├── preprocessing            <- Code for data processing. See previous milestone for content details.
     │   │   ├── ...
-    │   ├── model_compression       <- Code for model compression to ensure efficient run. See previous milestone for content details
+    │   ├── model_compression        <- Code for model compression to ensure efficient run. See previous milestone for content details
     │   │   ├── ...
     │   └── training                 <- Entire code for model training. See previous milestone for content details
     │       ├── ...
