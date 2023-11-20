@@ -68,30 +68,29 @@ Figure 1: Google Cloud Platform being used to store different versions of traini
 
 
 Here is our Technical Architecture:
-<img src="images/technical-arch.png"  width="800">
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f8662812-f84c-4f20-a878-9683353c67cf">
 
 
 **Backend API**
 
 We built backend api service using fast API to expose model functionality to the frontend. We also added apis that will help the frontend display some key information about the model and data. 
 
-<img src="images/api-list.png"  width="800">
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/7d71f975-77c9-4014-8545-d2c1f6b9cb9d">
 
-**Frontend**
+
+**Frontend** 
 
 A user friendly React app was built to identify fake news using deep learning model from the backend. Using the app a user can take upload the main image and title of a news article. The app will send the image and text to the backend api to get prediction results on the fake risk (likelihood) of the particular news article.
 
 Here are some screenshots of our app:
-<img src="images/frontend-1.png"  width="800">
-
-<img src="images/frontend-2.png"  width="800">
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/1db880ab-0262-4bc3-b977-1e7fa720bee4">
 
 **Deployment**
 
 We used Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible helps us manage infrastructure as code and this is very useful to keep track of our app infrastructure as code in GitHub. It helps use setup deployments in a very automated way.
 
 Here is our deployed app on a single VM in GCP:
-<img src="images/deployment-single-vm.png"  width="800">
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/0df72a19-13dc-4309-a0ee-7ce20c915a78">
 
 
 ### Code Structure
