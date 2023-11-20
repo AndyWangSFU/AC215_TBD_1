@@ -52,7 +52,8 @@ const Header = (props) => {
                     </IconButton>
                     <Link to="/" className={classes.appLink}>
                         <Typography className={classes.appTitle} >
-                        <span className={classes.strikethroughText}>🍄 Mushroom</span> Fake News Identifier
+                        {/* <span className={classes.strikethroughText}>🍄 Mushroom</span>  */}
+                        Fake News Identifier
                         </Typography>
                     </Link>
 
