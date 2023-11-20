@@ -60,9 +60,11 @@ Project Organization
 Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture abd Technical Architecture to ensure all our components work together.
 
 Here is our Solution Architecture:
-<img src="![WhatsApp Image 2023-11-20 at 16 56 45](https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/95425b32-0c62-442f-b9b5-3a9c1a66c426)"  width="800">
 
-![Uploading WhatsApp Image 2023-11-20 at 16.56.45.jpeg…]()
+<img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/c022ad7a-57ed-4bb2-975a-798e71e6e7f1)">
+
+
+Figure 1: Google Cloud Platform being used to store different versions of training and test data
 
 
 Here is our Technical Architecture:
