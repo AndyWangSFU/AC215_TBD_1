@@ -74,22 +74,18 @@ const Home = (props) => {
                         </Typography>
                     )}
 
-                    {image && (
-                        <div>
-                            <img className={classes.preview} src={image} alt="Preview" align="center"/>
-                        </div>
-                    )}
-    
+                    <div className={classes.help}>Please enter the text that you want to verify and an accompanying image: </div>
                     <div className={classes.textInputContainer}>
-                        <input
-                            type="text"
+                        <div className={classes.help1}>Step 1: Enter potential fake news: </div>
+                        <textarea
+                            rows={5} 
+                            wrap="hard"
                             className={classes.textInput}
-                            placeholder="Type text here..."
-                            value={text}
+                            placeholder={"Type text here..."}
                             onChange={(event) => setText(event.target.value)}
                             ref={textInput}
                         />
-    
+                        <div className={classes.help1}>Step 2: Enter accompanying image: </div>
                         <input
                             type="file"
                             accept="image/*"
@@ -104,13 +100,23 @@ const Home = (props) => {
                         <button className={classes.uploadButton} onClick={() => handleImageUploadClick()}>
                             Upload Image
                         </button>
+
+                        {image && (
+                        
+                            <div>
+                                <div className={classes.help1}>Image preview:</div>
+                                <img className={classes.preview} src={image} alt="Preview" style={{ alignSelf: 'center' }}/>
+                                
+                            </div>
+                            
+                        )}
     
                         <button className={classes.predictButton} onClick={() => handlePredictClick()}>
                             Is it fake news?
                         </button>
                     </div>
     
-                    <div className={classes.help}>Enter fake news and optionally upload an accompanying image...</div>
+                    {/* <div className={classes.help}>Enter fake news and optionally upload an accompanying image...</div> */}
                 </Container>
             </main>
         </div>
