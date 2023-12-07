@@ -24,7 +24,6 @@
           repository: gcr.io/{{ gcp_project }}/fake-news-classifier-app-frontend-react:{{ tag.stdout}}
           push: yes
           source: local
-    when: false  # This ensures the block is not executed
 
   # Continue with other tasks for building and pushing images
   - name: Build api-service container image

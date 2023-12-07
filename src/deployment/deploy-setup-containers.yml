@@ -46,7 +46,7 @@
       block:
         - docker_container:
             name: "frontend"
-            image: "gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}"
+            image: "gcr.io/{{ gcp_project }}/fake-news-classifier-app-frontend-react:{{ tag.stdout}}"
             state: started
             recreate: yes
             pull: yes
@@ -55,8 +55,7 @@
               - 3000:80
             networks:
               - name: "{{docker_network_name}}"
-      when: false
-
+ 
     # Create a folder on persistent disk
     - name: Create persistent directory
       file:
