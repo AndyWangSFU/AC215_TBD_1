@@ -8,7 +8,7 @@ on:
 
 jobs:
   Explore-GitHub-Actions:
-    if: contains(github.event.head_commit.message, '/run-')
+    if: contains(github.event.head_commit.message, 'run-')
     runs-on: ubuntu-latest
     steps:
       - run: echo "Comment ${{ github.event.head_commit.message }}"
@@ -36,7 +36,7 @@ jobs:
           cd ${{ github.workspace }}/src/deployment/
           docker build -t fakenews-deployment -f Dockerfile .
       - name: Run Deploy App
-        if: contains(github.event.head_commit.message, '/run-deploy-app')
+        if: contains(github.event.head_commit.message, 'run-deploy-app')
         run: |-
           docker run --rm --name fakenews-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
@@ -55,7 +55,7 @@ jobs:
             -e GCP_ZONE=us-central1-a \
             fakenews-deployment sh sh deploy-setup-webserver.yml
       - name: Run Data Processor Pipeline
-        if: contains(github.event.head_commit.message, '/run-data-processor')
+        if: contains(github.event.head_commit.message, 'run-data-processor')
         run: |-
           docker run --rm --name fakenews-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
