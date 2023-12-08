@@ -43,17 +43,13 @@ jobs:
             -v $HOME/.ssh:/home/app/.ssh \
             -v ${{ github.workspace }}/src/frontend-react:/frontend-react \
             -v ${{ github.workspace }}/src/api-service:/api-service \
-            -v ${{ github.workspace }}/src/training:/training \
-            -v ${{ github.workspace }}/src/preprocessing:/preprocessing \
             --volume $GITHUB_WORKSPACE:/workspace \
             --mount type=bind,source=$GOOGLE_APPLICATION_CREDENTIALS,target=/secrets/deployment.json \
-            --mount type=bind,source=$WANDB_KEY,target=/secrets/wandb_key.txt \
             --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
-            --env GOOGLE_WANDB_KEY= /secrets/wandb_key.txt\
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-398714 \
             -e GCP_ZONE=us-central1-a \
-            fakenews-deployment sh sh deploy-setup-webserver.yml
+            fakenews-deployment sh deploy-setup-webserver.yml
       - name: Run Data Processor Pipeline
         if: contains(github.event.head_commit.message, 'run-data-processor')
         run: |-
