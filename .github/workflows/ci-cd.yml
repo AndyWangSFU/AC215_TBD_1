@@ -60,15 +60,13 @@ jobs:
             -v ${{ github.workspace }}/src/training:/training \
             -v ${{ github.workspace }}/src/preprocessing:/preprocessing \
             --mount type=bind,source=$GOOGLE_APPLICATION_CREDENTIALS,target=/secrets/deployment.json \
-            --mount type=bind,source=$WANDB_KEY,target=/secrets/wandb_key.txt \
             -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
-            -e GOOGLE_WANDB_KEY=/secrets/wandb_key.txt \
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-398714 \
             -e GCP_ZONE=us-central1-a \
             -e GCS_BUCKET_NAME=fakenew_classifier_data_bucket \
             -e GCS_SERVICE_ACCOUNT=deployment@ac215-398714.iam.gserviceaccount.com \
             -e GCP_REGION=us-central1 \
-            -e GCS_PACKAGE_URI=gs://fakenews-classifier \
+            -e GCS_PACKAGE_URI=gs://fakenew_classifier_data_bucket \
             fakenews-deployment sh deploy-docker-images.yml
       - run: echo "Job's status is ${{ job.status }}."
