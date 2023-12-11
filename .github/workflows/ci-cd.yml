@@ -70,5 +70,5 @@ jobs:
             -e GCS_SERVICE_ACCOUNT=deployment@ac215-398714.iam.gserviceaccount.com \
             -e GCP_REGION=us-central1 \
             -e GCS_PACKAGE_URI=gs://fakenews-classifier \
-            fakenews-deployment sh deploy-setup-containers.yml
+            fakenews-deployment sh deploy-docker-images.yml
       - run: echo "Job's status is ${{ job.status }}."
