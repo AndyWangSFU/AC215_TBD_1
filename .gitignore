@@ -1,0 +1,10 @@
+# preprocessed data
+src/preprocessing/data/*
+src/preprocessing/raw_images/*
+
+# secret file
+*secrets/
+
+# system files
+*.DS_Store
+*.jpg

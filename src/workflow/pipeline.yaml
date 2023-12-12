@@ -1,0 +1,83 @@
+# PIPELINE DEFINITION
+# Name: ml-pipeline
+components:
+  comp-compress:
+    executorLabel: exec-compress
+  comp-download:
+    executorLabel: exec-download
+  comp-process:
+    executorLabel: exec-process
+  comp-train:
+    executorLabel: exec-train
+deploymentSpec:
+  executors:
+    exec-compress:
+      container:
+        args:
+        - downsize_model.py
+        - --raw_model_path models/raw_models  --quantization_type float16  --hidden_layer_size
+          224  --learn_rate 0.001  --epochs 20  --batch_size 16  --metadata_path new_data/new_metadata  --images_path
+          new_data/new_images   --new_data_size 41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470
+        image: ksiyang/multimodal_fakenews_detector_model_compression
+    exec-download:
+      container:
+        args:
+        - data_loader.py
+        - '-d '
+        - -m 10
+        image: kirinlfc/fakenews-detector-data-preprocessor
+    exec-process:
+      container:
+        args:
+        - process.py
+        - '-p '
+        image: kirinlfc/fakenews-detector-data-preprocessor
+    exec-train:
+      container:
+        args:
+        - multimodal_binary_training.py
+        - --hidden_layer_size 224   --learn_rate 0.001   --epochs 20   --batch_size
+          16   --metadata_path new_data/new_metadata   --images_path new_data/new_images   --new_data_size
+          41   --wandb 66f5d9722b4bef56a139f86a08c40f3929f97470
+        image: ksiyang/model_training
+pipelineInfo:
+  name: ml-pipeline
+root:
+  dag:
+    tasks:
+      compress:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-compress
+        dependentTasks:
+        - train
+        taskInfo:
+          name: model compression
+      download:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-download
+        taskInfo:
+          name: data download
+      process:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-process
+        dependentTasks:
+        - download
+        taskInfo:
+          name: data process
+      train:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-train
+        dependentTasks:
+        - process
+        taskInfo:
+          name: model training
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0

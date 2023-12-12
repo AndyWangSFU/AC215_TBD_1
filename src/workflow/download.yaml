@@ -1,0 +1,28 @@
+# PIPELINE DEFINITION
+# Name: download-pipeline
+components:
+  comp-download:
+    executorLabel: exec-download
+deploymentSpec:
+  executors:
+    exec-download:
+      container:
+        args:
+        - data_loader.py
+        - '-d '
+        - -m 10
+        image: kirinlfc/fakenews-detector-data-preprocessor
+pipelineInfo:
+  name: download-pipeline
+root:
+  dag:
+    tasks:
+      download:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-download
+        taskInfo:
+          name: download
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0
