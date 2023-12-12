@@ -174,7 +174,7 @@ Here is our Technical Architecture:
 We deployed our frontend and Model API in a GCE Kubernetes cluster, ensuring efficient load balancing and failover handling. The creation and maintenance of the Kubernetes clustere is managed through Ansible scripts. Utilizing Ansible for infrastructure as code is beneficial for maintaining our application's infrastructure on GitHub. This approach significantly streamlines the setup of deployments, enabling high automation.
 
 Here is our deployed app in GCP:
-<img src="images/cluster.jpeg"  width="800">
+<img src="images/kubernetes.jfif"  width="800">
 
 
 ### Code Structure
