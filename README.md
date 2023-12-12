@@ -1,7 +1,7 @@
 AC215 - Multimodal Fake News Detector
 ==============================
 ### Presentation  Video
-* Welcome to watch our 5-min short demo in [YouTube](https://www.youtube.com/watch?v=M-FCuTmZHN4)!
+* Welcome to watch our 5-min short demo on [YouTube](https://www.youtube.com/watch?v=M-FCuTmZHN4)!
 
 ### Blog Post Link
 * Please refer to our Medium post [here](https://medium.com/@qassigaba/6f00526a28cd)!
