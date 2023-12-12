@@ -10,6 +10,7 @@ AC215 - Multimodal Fake News Detector
 
 Project Organization
 ------------
+```
 ├── LICENSE
 ├── .gitignore
 ├── notebooks
@@ -109,6 +110,8 @@ Project Organization
 │   ├── docker-entrypoint.sh
 │   └── docker-shell.sh
 │   └── nginx-conf/nginx
+
+```
     
 --------
 
