@@ -1,7 +1,7 @@
 AC215 - Multimodal Fake News Detector
 ==============================
 ### Presentation  Video
-* Welcome to watch our short demo in [YouTube](https://www.youtube.com/watch?v=M-FCuTmZHN4)!
+* Welcome to watch our 5-min short demo in [YouTube](https://www.youtube.com/watch?v=M-FCuTmZHN4)!
 
 ### Blog Post Link
 * Please refer to our Medium post [here](https://medium.com/@qassigaba/6f00526a28cd)!
@@ -129,7 +129,7 @@ In this project we aim to design and deploy a model that detects fake content wh
 
 ## Data Description 
 
-We utilize the Fakeddit dataset, compiled by Nakamura, Levy, and Wang in 2020, to train, validate and test our model. This dataset comprises over a million textual samples categorized into six groups: “True,” “Satire,” “Misleading Content,” “Manipulated Content,” “False Connection,” or “Imposter Content.” Notably, 682,996 samples are multimodal, featuring both text and associated images. The dataset details are shown in Table 1. Given its substantial size and its ability to represent short-form content often found on the web, we considered this dataset an excellent starting point for training an effective fake news detector. 
+We utilize the Fakeddit dataset, compiled by Nakamura, Levy, and Wang in 2020, to train, validate and test our model. This dataset comprises over a million textual samples categorized into six groups: `“True,” “Satire,” “Misleading Content,” “Manipulated Content,” “False Connection,” or “Imposter Content.”` Notably, 682,996 samples are multimodal, featuring both text and associated images. The dataset details are shown in Table 1. Given its substantial size and its ability to represent short-form content often found on the web, we considered this dataset an excellent starting point for training an effective fake news detector. 
 
 ![Table 1](https://miro.medium.com/v2/resize:fit:1400/format:webp/0*gkAqHZO075LNrBsA)
 
@@ -145,8 +145,10 @@ After completions of building a robust ML Pipeline in our previous milestones, w
 A user friendly React app was built to identify the truth of some news using a multimodel (ResNet-50 for image encoder; DisillBert for text encoder) from the GCP backend. Using the app, a user can take a picture of the news and upload the corresponding news description. The app will send the both information to the backend api, generate image and text embeddings and get prediction results on weather the news is fake or not.
 
 Here are some screenshots of our app:
+**Main Page**
 <img src="images/APPfrontend.jpeg"  width="800">
 
+**An Example - Fake News**
 <img src="images/APPfrontend2.png"  width="800">
 
 
@@ -157,12 +159,14 @@ Before we start implementing the app we built a detailed design document outlini
 Here is our Solution Architecture:
 
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/c022ad7a-57ed-4bb2-975a-798e71e6e7f1)">
+
 *Figure 1: Solution architecture of project*
 
 
 
 Here is our Technical Architecture:
 <img width="1264" alt="Screenshot 2023-10-04 at 7 19 39 PM" src= "https://github.com/AndyWangSFU/AC215_TBD_1/assets/112672824/f8662812-f84c-4f20-a878-9683353c67cf">
+
 *Figure 2: Technical architecture of project*
 
 **Kubernetes Deployment**
@@ -254,9 +258,3 @@ The CI/CD workflow can be used when:
 * Run Vertex AI jobs and deploy the ntire workflow (data processing, model training, api). An example is [here](https://github.com/AndyWangSFU/AC215_TBD_1/actions/runs/7174803073/job/19536935796)
 
 ---
-
-## NOTE
-
-**DO NOT KEEP YOUR GCP INSTANCES RUNNING**
-
-Once you are done with taking screenshots for the milestone bring them down. 
